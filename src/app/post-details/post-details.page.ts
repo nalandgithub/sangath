@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
+// import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { ModalController } from '@ionic/angular';
 import { API_ENDPOINT_GETINTERESTEDLIST } from '../constant/constant.config';
 import { CmnServiceService } from '../Service/cmn-service.service';
@@ -17,7 +17,8 @@ export class PostDetailsPage implements OnInit {
   constructor(private modalController: ModalController,
     private serviceWrapper: ServicesWrapperService,
     private cmnService: CmnServiceService,
-    private callNumber: CallNumber) { }
+    // private callNumber: CallNumber
+  ) { }
 
   ngOnInit() {
     //console.log("From details ", this.detail);
@@ -52,9 +53,9 @@ export class PostDetailsPage implements OnInit {
   }
 
   callPerson(number) {
-    this.callNumber.callNumber(number, false)
-      .then(res => console.log('Launched dialer!', res))
-      .catch(err => console.log('Error launching dialer', err));
-  }
+  //   this.callNumber.callNumber(number, false)
+  //     .then(res => console.log('Launched dialer!', res))
+  //     .catch(err => console.log('Error launching dialer', err));
+   }
 
 }

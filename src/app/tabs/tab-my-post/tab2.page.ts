@@ -41,6 +41,7 @@ export class Tab2Page implements OnInit {
     };
     this.serviceWrapper.postApi(API_ENDPOINT_GET_MY_POSTS + "/1", myPostObj).subscribe((resp: any) => {
       //console.log("my post", resp);
+      
       this.showLoader = false;
       if (resp.status == 1) {
         this.allPosts = resp.posts;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { CmnServiceService } from "src/app/Service/cmn-service.service";
 import { ServicesWrapperService } from "src/app/Service/services-wrapper.service";
-import { Clipboard } from "@awesome-cordova-plugins/clipboard/ngx";
+// import { Clipboard } from "@awesome-cordova-plugins/clipboard/ngx";
 import { AlertController } from "@ionic/angular";
 import {
   API_ENDPOINT_ADD_FRIEND,
@@ -28,7 +28,7 @@ export class MyProfilePage implements OnInit {
   constructor(
     private serviceWrapper: ServicesWrapperService,
     private cmn: CmnServiceService,
-    private clipboard: Clipboard,
+    // private clipboard: Clipboard,
     private alertCtrl: AlertController
   ) { }
 
@@ -59,7 +59,7 @@ export class MyProfilePage implements OnInit {
     //console.log(this.userProfileData);
   }
   copyText(textToCopy) {
-    this.clipboard.copy(textToCopy);
+    // this.clipboard.copy(textToCopy);
     this.cmn.showThemeBasedToast("Text Copied Successfully!");
   }
 

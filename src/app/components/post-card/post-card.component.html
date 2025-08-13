@@ -34,17 +34,26 @@
       </ion-col>
     </ion-row>
     <ion-row style="padding-top: 10px;padding-bottom:3px;font-size: 13px;" *ngIf="module == 'my-post'">
-      <ion-col size="4" style="text-align: left;">
-        <ion-button (click)="redirectToDetails()" style="color: white;text-transform: none;">
-          Interests
-        </ion-button>
-      </ion-col>
-      <ion-col size="4" style="text-align:left;">
-        <ion-icon name="information-circle-sharp"
-          style="padding-top: 15px;padding-right:10px;font-size: 20px;color: blue;"
-          (click)="presentInfoPopover3($event)">
-        </ion-icon>
-      </ion-col>
+     
+     <ion-col size="4" style="text-align: left;">
+  <div style="display:flex; align-items:center; gap:6px;">
+    <ion-button (click)="redirectToDetails()" class="ion-no-margin" style="text-transform: none;">
+      Interests
+    </ion-button>
+     <ion-badge 
+      color="primary" 
+      style="
+        min-width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: bold;
+      ">{{ detail.interest_count || 0 }}</ion-badge>
+  </div>
+</ion-col>
     </ion-row>
   </ion-card-content>
   <ion-card-content *ngIf="detail.identifier == 0 && detail.select_option == 0" style="padding-top: 10px;padding-bottom: 3px;">

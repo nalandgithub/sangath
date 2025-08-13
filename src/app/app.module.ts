@@ -11,9 +11,9 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 // import { AuthService } from './shared-components/auth-service/auth.service.ts';
 import { IonicStorageModule } from "@ionic/storage-angular";
 import { UniqueDeviceID } from "@ionic-native/unique-device-id/ngx";
-import { Clipboard } from "@awesome-cordova-plugins/clipboard/ngx";
+// import { Clipboard } from "@awesome-cordova-plugins/clipboard/ngx";
 import { File } from "@ionic-native/file/ngx";
-import { CallNumber } from "@awesome-cordova-plugins/call-number/ngx";
+// import { CallNumber } from "@awesome-cordova-plugins/call-number/ngx";
 import { CommonModule } from "@angular/common";
 import { HttpResponseInterceptor } from "./interceptors/http-response-interceptor";
 @NgModule({
@@ -38,8 +38,7 @@ import { HttpResponseInterceptor } from "./interceptors/http-response-intercepto
     // { provide: HTTP_INTERCEPTORS, useClass: AuthService, multi: true },
     File,
     UniqueDeviceID,
-    Clipboard,
-    CallNumber,
+    // Clipboard,
   ],
   bootstrap: [AppComponent],
 })

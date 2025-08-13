@@ -1,4 +1,4 @@
-export const SERVER_URL = "http://65.0.89.155/";
+export const SERVER_URL = "http://techwise-apps.com/connectplus/";
 
 export const UPLOAD_URL = SERVER_URL + "user-media/v1/upload-user-media";
 export const APP_VERSION = "1.0.2";
@@ -35,6 +35,7 @@ export const API_ENDPOINT_POST_TRAVELLER = "posttraveller";
 export const API_ENDPOINT_GET_LINK = "getlink";
 export const API_ENDPOINT_GET_POSTS = "getposts";
 export const API_ENDPOINT_GET_MY_POSTS = "getmyposts";
+export const API_ENDPOINT_GET_MY_POSTS_HISTORY = "getmypostshistory";
 export const API_ENDPOINT_CHECK_TOKEN = "chckTkn";
 export const API_ENDPOINT_DONATION = "donation";
 export const API_ENDPOINT_SHOWINTEREST = "interest";

@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { AlertController, MenuController, NavController } from "@ionic/angular";
+import { AlertController, MenuController, NavController, ToastController } from "@ionic/angular";
 import { ServicesWrapperService } from "./Service/services-wrapper.service";
 import {
   API_ENDPOINT_ADD_FRIEND,
@@ -30,6 +30,7 @@ import { FCM } from "@capacitor-community/fcm";
 import { App } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { Keyboard } from "@capacitor/keyboard";
+
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",
@@ -41,132 +42,170 @@ export class AppComponent implements OnInit {
   alertObj: any;
   loggedInUser: any;
   latestVersion: any;
+
   constructor(
     private navCtrl: NavController,
     private menuCtrl: MenuController,
     private servicesWrapper: ServicesWrapperService,
     private cmnservice: CmnServiceService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController
   ) {}
-  ngOnInit(): void {
+
+  async ngOnInit(): Promise<void> {
     if (Capacitor.isPluginAvailable("StatusBar")) {
       StatusBar.setStyle({ style: Style.Default });
       StatusBar.setBackgroundColor({ color: "#961175" });
     }
 
-    // setTimeout(() => {
-    //   SplashScreen.hide();
-    // }, 5000);
-    this.splashscreenSetting();
+    await this.splashscreenSetting();
 
     this.currentPlatform = Capacitor.getPlatform();
-    //console.log("Platform", this.currentPlatform);
+
     if (localStorage.getItem(LOGIN_DETAILS_KEY)) {
       this.getPopupImage();
     }
-    this.setupFirebase();
+
+    await this.setupFirebase();
+
     this.loggedInUser = JSON.parse(localStorage.getItem("login-details"));
     this.getAppInfoForVersion();
-    // this.isAppLatest();
     this.manageKeyboardEvents();
   }
 
-  setupFirebase() {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    PushNotifications.requestPermissions().then((result) => {
-      //console.log("requestPermissions Firebase", result);
-      if (result.receive === "granted") {
-        PushNotifications.register();
-        // Register with Apple / Google to receive push via APNS/FCM
-        if (this.currentPlatform == "android") {
-          PushNotifications.register();
-        } else if (this.currentPlatform == "ios") {
-          FCM.getToken()
-            .then((r) => {
-              console.log("FCM Token from gettoken", r);
-              localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, r.token);
-              // alert(`Token ${r.token}`)
-            })
-            .catch((err) => console.log("FCM gettoken", err));
+  /** Toast banner while app is foregrounded (no extra plugin) */
+  private async showForegroundToast(n: PushNotificationSchema) {
+    const toast = await this.toastCtrl.create({
+      header: n.title || "Notification",
+      message: n.body || "",
+      duration: 3500,
+      position: "top",
+      color: "primary",
+      buttons: [
+        {
+          text: "Open",
+          role: "info",
+          handler: () => {
+            const data: any = (n as any)?.data || {};
+            const action = data["action"] || "";
+            this.routeFromAction(action);
+          },
+        },
+      ],
+    });
+    await toast.present();
+  }
+
+  private routeFromAction(action: string) {
+    const redirectUrlBase = "/tabs/tabs/";
+    switch (action) {
+      case FIREBASE_PUSH_REDIRECTION_ACTION_HOME:
+        this.navCtrl.navigateRoot(redirectUrlBase + "tab1");
+        break;
+      case FIREBASE_PUSH_REDIRECTION_ACTION_MYPOSTS:
+        this.navCtrl.navigateRoot(redirectUrlBase + "tab2");
+        break;
+      case FIREBASE_PUSH_REDIRECTION_ACTION_FRIENDREQUEST:
+        this.navCtrl.navigateRoot(redirectUrlBase + "tab-friends", {
+          queryParams: { segment: 1 },
+        });
+        break;
+      case FIREBASE_PUSH_REDIRECTION_ACTION_HASACAR:
+        this.navCtrl.navigateRoot(redirectUrlBase + "tab1", {
+          queryParams: { segment: 1 },
+        });
+        break;
+      case FIREBASE_PUSH_REDIRECTION_ACTION_WANTTOTRAVEL:
+        this.navCtrl.navigateRoot(redirectUrlBase + "tab1", {
+          queryParams: { segment: 0 },
+        });
+        break;
+      default:
+        // Optional: fallback
+        this.navCtrl.navigateRoot(redirectUrlBase + "tab1");
+        break;
+    }
+  }
+
+  async setupFirebase() {
+    // Create Android notification channel once (required for Android 8+)
+    if (this.currentPlatform === "android") {
+      try {
+        await PushNotifications.createChannel({
+          id: "high",
+          name: "General Notifications",
+          description: "General notifications",
+          importance: 5, // heads-up
+          visibility: 1,
+          vibration: true,
+        });
+      } catch {}
+    }
+
+    // Request permission and register ONCE for both platforms
+    const perm = await PushNotifications.requestPermissions();
+    if (perm.receive === "granted") {
+      await PushNotifications.register();
+
+      // iOS: get the FCM token (APNs token alone isn't enough for FCM)
+      if (this.currentPlatform === "ios") {
+        try {
+          const r = await FCM.getToken();
+          if (r?.token) {
+            console.log("FCM Token (iOS):", r.token);
+            localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, r.token);
+          }
+        } catch (err) {
+          console.log("FCM getToken error", err);
         }
-      } else {
-        // Show some error
-        //console.log("Permission not granted");
+      }
+    } else {
+      // Permission not granted
+      return;
+    }
+
+    // Device/APNs/FCM token
+    PushNotifications.addListener("registration", (token: Token) => {
+      console.log("Push token:", token.value);
+      // Use Android registration token unless you override with FCM token later
+      if (this.currentPlatform === "android") {
+        localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
       }
     });
 
-    // On success, we should be able to receive notifications
-    PushNotifications.addListener("registration", (token: Token) => {
-      // console.log("Push registration success, token: " + token.value);
-      // localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
-      if (this.currentPlatform == "android")
-        localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
-    });
-
-    // Some issue with our setup and push will not work
     PushNotifications.addListener("registrationError", (error: any) => {
       alert("Error on registration: " + JSON.stringify(error));
     });
 
-    // Show us the notification payload if the app is open on our device
+    // Foreground messages → show toast so user sees something
     PushNotifications.addListener(
       "pushNotificationReceived",
       (notification: PushNotificationSchema) => {
-        //console.log("Push received: " + JSON.stringify(notification));
+        console.log("Push received (fg): " + JSON.stringify(notification));
+        this.showForegroundToast(notification);
       }
     );
 
-    // Method called when tapping on a notification
+    // Notification tapped (background/killed)
     PushNotifications.addListener(
       "pushNotificationActionPerformed",
-      (notification: ActionPerformed) => {
-        //console.log("Push action performed: " + JSON.stringify(notification));
-        if (notification.actionId == "tap") {
-          if (
-            notification.notification.data["action"] &&
-            notification.notification.data["action"] != ""
-          ) {
-            //console.log("from notif", notification.notification.data["action"]);
-            let redirectUrlBase = "/tabs/tabs/";
-            switch (notification.notification.data["action"]) {
-              case FIREBASE_PUSH_REDIRECTION_ACTION_HOME:
-                this.navCtrl.navigateRoot(redirectUrlBase + "tab1");
-                break;
-              case FIREBASE_PUSH_REDIRECTION_ACTION_MYPOSTS:
-                this.navCtrl.navigateRoot(redirectUrlBase + "tab2");
-                break;
-              case FIREBASE_PUSH_REDIRECTION_ACTION_FRIENDREQUEST:
-                this.navCtrl.navigateRoot(redirectUrlBase + "tab-friends", {
-                  queryParams: { segment: 1 },
-                });
-                break;
-              case FIREBASE_PUSH_REDIRECTION_ACTION_HASACAR:
-                this.navCtrl.navigateRoot(redirectUrlBase + "tab1", {
-                  queryParams: { segment: 1 },
-                });
-                break;
-              case FIREBASE_PUSH_REDIRECTION_ACTION_WANTTOTRAVEL:
-                this.navCtrl.navigateRoot(redirectUrlBase + "tab1", {
-                  queryParams: { segment: 0 },
-                });
-                break;
-              default:
-                break;
-            }
-          }
-        }
+      (ev: ActionPerformed) => {
+        console.log("pushNotificationActionPerformed:", ev);
+        // Safely pull action regardless of structure
+        const data: any =
+          (ev?.notification as any)?.data ||
+          (ev as any)?.data ||
+          {};
+        const action = data["action"] || "";
+        this.routeFromAction(action);
       }
     );
   }
 
   getAppInfoForVersion() {
     App.getInfo().then((info) => {
-      //console.log("Cap App info", info);
       if (info && info.version) {
         this.appVersionNum = info.version;
-        // this.isAppLatest();
       }
     });
   }
@@ -180,7 +219,6 @@ export class AppComponent implements OnInit {
   }
 
   redirectFromSideMenu(moduleName: any) {
-    //console.log("From side menu", moduleName);
     this.menuCtrl.toggle();
     this.navCtrl.navigateRoot("/tabs/tabs/tab4", {
       queryParams: { module: moduleName },
@@ -191,9 +229,6 @@ export class AppComponent implements OnInit {
     this.servicesWrapper
       .getApi(API_ENDPOINT_GET_APP_VERSIONS)
       .subscribe((resp: any) => {
-        // return Capacitor.getPlatform();
-        //console.log("version", resp);
-        //console.log("platform", Capacitor.getPlatform());
         let platform = Capacitor.getPlatform();
         if (resp.status == 1) {
           this.latestVersion =
@@ -202,7 +237,6 @@ export class AppComponent implements OnInit {
               : platform == "ios"
               ? resp.ios_version
               : "";
-          //console.log("latestVersion", this.latestVersion);
           if (this.latestVersion != this.appVersionNum) {
             this.showUpdateAlert();
           }
@@ -219,14 +253,11 @@ export class AppComponent implements OnInit {
         {
           text: "Cancel",
           role: "cancel",
-          handler: () => {
-            //console.log("Cancel clicked");
-          },
+          handler: () => {},
         },
         {
           text: "Update",
           handler: () => {
-            // this.openUrl(this.latestVersion);
             this.openUrl("http://onelink.to/3vpbfy");
           },
         },
@@ -243,7 +274,6 @@ export class AppComponent implements OnInit {
     this.servicesWrapper
       .getApi(API_ENDPOINT_GET_POP_IMAGE)
       .subscribe((resp: any) => {
-        //console.log("popup image", resp);
         if (resp.status == 1)
           this.cmnservice.openModal(PopupImageComponent, resp.imgurl);
       });
@@ -265,7 +295,6 @@ export class AppComponent implements OnInit {
         {
           text: "Send Request",
           handler: (alertData) => {
-            //console.log(alertData.sangathIdTxt);
             if (alertData.sangathIdTxt)
               this.sendFriendRequest(alertData.sangathIdTxt);
             else this.cmnservice.showError("Please enter valid SangathId.");
@@ -285,7 +314,6 @@ export class AppComponent implements OnInit {
   }
 
   sendFriendRequest(sangathId) {
-    // this.showLoader = true;
     this.cmnservice.showLoader();
     let addFrndObj = {
       token: this.cmnservice.getLoginToken(),
@@ -295,7 +323,6 @@ export class AppComponent implements OnInit {
     this.servicesWrapper
       .postApi(API_ENDPOINT_ADD_FRIEND, addFrndObj)
       .subscribe((resp: any) => {
-        // this.showLoader = false;
         this.cmnservice.hideLoader();
         if (resp.status == 1) {
           this.alertObj.dismiss();
@@ -311,20 +338,14 @@ export class AppComponent implements OnInit {
   manageKeyboardEvents() {
     Keyboard.addListener("keyboardWillShow", (info) => {
       this.cmnservice.callAnotherComponentMehthod(KEYBOARD_IS_OPEN_INOVKE_KEY);
-      //console.log("keyboard will show with height:", info.keyboardHeight);
     });
 
-    Keyboard.addListener("keyboardDidShow", (info) => {
-      //console.log("keyboard did show with height:", info.keyboardHeight);
-    });
+    Keyboard.addListener("keyboardDidShow", (info) => {});
 
     Keyboard.addListener("keyboardWillHide", () => {
       this.cmnservice.callAnotherComponentMehthod(KEYBOARD_IS_CLOSE_INOVKE_KEY);
-      //console.log("keyboard will hide");
     });
 
-    Keyboard.addListener("keyboardDidHide", () => {
-      //console.log("keyboard did hide");
-    });
+    Keyboard.addListener("keyboardDidHide", () => {});
   }
 }
