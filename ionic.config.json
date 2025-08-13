@@ -1,0 +1,9 @@
+{
+  "name": "Sangath",
+  "integrations": {
+    "capacitor": {
+      
+    }
+  },
+  "type": "angular"
+}

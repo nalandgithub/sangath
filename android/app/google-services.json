@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "132360890367",
+    "project_id": "mysangathapp-24084",
+    "storage_bucket": "mysangathapp-24084.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132360890367:android:11c735a1993ed5b65d29ca",
+        "android_client_info": {
+          "package_name": "com.user.sangathapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "132360890367-6tvm9qgf6g4s1b9tadh9en5rnc45f60p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPhR4Yj2tpOE06qT0wQQfZTkX5cRyEcMA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "132360890367-6tvm9qgf6g4s1b9tadh9en5rnc45f60p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "132360890367-1r1d59bk04esmj8b10qr1g2ad17vs3pd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.user.sangathapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

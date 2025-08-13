@@ -1,0 +1,37 @@
+<div class="loader" *ngIf="showLoader">
+  <ion-spinner color="primary"></ion-spinner>
+</div>
+<ion-content>
+
+</ion-content>
+
+<!-- For iOS -->
+
+<ion-tabs style="position: fixed;">
+  <!-- For Android -->
+  <!-- <ion-tabs style="position: fixed;padding-top: 15%;"> -->
+  <ion-fab-button (click)="askPostTypeOption($event)" class="m-button" style="border: 3px solid #961175;border-radius:30px">
+    <img src="assets/plus-sign-pink.png">
+  </ion-fab-button>
+  <ion-tab-bar class="icon-color" slot="bottom">
+    <ion-tab-button class="selected-tab" tab="tab1">
+      <ion-icon name="home-outline"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button class="selected-tab" tab="tab2">
+      <ion-icon name="documents-outline"></ion-icon>
+      <ion-label>My Posts</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button class="selected-tab" tab="tab-friends">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label>My Friends</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button class="selected-tab" (click)="openSideMenu()">
+      <ion-icon name="menu"></ion-icon>
+      <ion-label>Menu</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

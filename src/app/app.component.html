@@ -1,0 +1,138 @@
+<ion-app>
+  <ion-menu side="end" menuId="side-menu" contentId="main">
+    <ion-header>
+
+    </ion-header>
+    <!-- <h2 style="text-align: center;color:#961175">My Menu</h2> -->
+    <ion-content style="overflow-y:no-scroll;">
+      <ion-grid style="padding-top:20px;">
+        <ion-row>
+          <ion-title style="text-align: center;position: inherit;">
+            <!-- <img src="assets/img.png" style="height: 47px;padding-top: 5px;"> -->
+            <h2 style="text-align: center;color:#961175">Menu</h2>
+          </ion-title>
+        </ion-row>
+      </ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('my-profile')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: navy;" name="person-circle-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                My Profile
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('subscriptions')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: #85bb65;" name="cash-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Subscriptions
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('feedbacks')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: maroon" name="reader-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Feedback
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('notifications')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: #e56b6f" name="notifications-circle-outline" slot="start">
+              </ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Notifications
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('contact-us')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: #d4af37" name="call-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Contact Us
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <!-- <ion-col size="3"></ion-col> -->
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('settings')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;" name="cog-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Settings
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('faqtnc')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: olive;" name="flag-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                FAQs
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('history')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: steelblue;" name="hourglass-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                History
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      
+        <ion-col size="6" *ngIf="loggedInUser?.data[0].user_type==3"> 
+          <ion-card (click)="redirectFromSideMenu('add-member')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: orangered;" name="person-add-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Add Member
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6" *ngIf="loggedInUser?.data[0].user_type==3">
+          <ion-card (click)="redirectFromSideMenu('upload-image')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: #D4AF37;" name="image-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Popup Image
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <!-- <ion-list style="text-align: center;">
+        <ion-button (click)="presentAlertPrompt()" style="text-transform: none;">
+          <ion-icon name="person-add-outline"></ion-icon>
+          &nbsp;Add New friend
+        </ion-button>
+      </ion-list> -->
+    </ion-content>
+    <ion-footer style="text-align: center;">
+      <ion-label class="ion-text-center" *ngIf="appVersionNum" style="color: black;">
+        App Version - {{appVersionNum}}
+      </ion-label>
+      
+        <ion-img src="../assets/mixed.png" style="height: 47px;padding-top: 5px;"></ion-img>
+      
+    </ion-footer>
+  </ion-menu>
+  <ion-router-outlet id="main"></ion-router-outlet>
+</ion-app>

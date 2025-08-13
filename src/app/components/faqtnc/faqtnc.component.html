@@ -1,0 +1,2 @@
+<app-accordion *ngFor="let technology of technologies" name="{{ technology.name }}"
+    description="{{ technology.description }}" (change)="captureName($event)"></app-accordion>

@@ -1,0 +1,92 @@
+<!-- <ion-header>
+  <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)" mode="ios"
+    style="position: fixed;z-index: 99999;background: #961175;">
+    <ion-segment-button value="0">
+      <ion-label>
+        <b>I want to travel</b>
+      </ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="1">
+      <ion-label>
+        <b>I have a car</b>
+      </ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+</ion-header>
+<ion-content>
+  <div class="loader" *ngIf="showLoader">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+
+
+  <div *ngIf="!showLoader">
+    <ion-slides #slides (ionSlideDidChange)="slideChanged()" style="padding-top: 20px;">
+      <ion-slide>
+        <app-posts [data]="allPosts" [module]="'travellee'"></app-posts>
+      </ion-slide>
+      <ion-slide>
+        <app-posts [data]="allPosts" [module]="'traveller'"></app-posts>
+      </ion-slide>
+    </ion-slides>
+  </div>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+</ion-content> -->
+
+<ion-header class="ion-no-border">
+  <ion-toolbar class="ion-text-center" style="padding-bottom: 10px">
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col class="ion-no-padding" style="background-color: #961175">
+          <ion-label>
+            <img src="assets/sangath-invert.png" style="height: 47px; padding-top: 5px" />
+          </ion-label>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+<ion-grid class="ion-text-center" style="padding-top:10px;width: 100%;max-height: 50px;">
+  <ion-row>
+    <ion-col class="ion-no-padding">
+      <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)" mode="ios"
+        style="background: #961175; width: 70%; min-height: 25px; margin:0 auto">
+        <ion-segment-button value="0">
+          <ion-label [ngClass]="segment == 0 ? 'col-black' : 'col-white' ">
+            <b>I want to travel</b>
+          </ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="1">
+          <ion-label [ngClass]="segment == 1 ? 'col-black' : 'col-white' ">
+            <b>I have a car</b>
+          </ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+<ion-content>
+  <div class="loader" *ngIf="showLoader">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+  <!-- <ion-toolbar>
+    
+  </ion-toolbar> -->
+  
+  <div *ngIf="!showLoader">
+    <ion-slides #slides (ionSlideDidChange)="slideChanged()" style="padding-top: 10px">
+      <ion-slide>
+        <app-posts [data]="allPosts" [module]="'travellee'"></app-posts>
+      </ion-slide>
+      <ion-slide>
+        <app-posts [data]="allPosts" [module]="'traveller'"></app-posts>
+      </ion-slide>
+    </ion-slides>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+  </div>
+</ion-content>

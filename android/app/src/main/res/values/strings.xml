@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sangath</string>
+    <string name="title_activity_main">Sangath</string>
+    <string name="package_name">com.user.sangathapp</string>
+    <string name="custom_url_scheme">com.user.sangathapp</string>
+</resources>

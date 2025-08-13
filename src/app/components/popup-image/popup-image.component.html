@@ -1,0 +1,10 @@
+<div style="height: 100%; padding: 30px;padding-top: 100px;">
+  <ion-item>
+
+  </ion-item>
+  <img src="{{imgSrc}}">
+  <ion-item style="padding-left:20px;background:white">
+    <ion-label>Skip till tomorrow.</ion-label>
+    <ion-checkbox slot="start" [(ngModel)]="isChecked" (ionChange)="onCheckboxChange($event)"></ion-checkbox>
+  </ion-item>
+</div>

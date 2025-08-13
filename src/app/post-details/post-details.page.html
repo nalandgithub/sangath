@@ -1,0 +1,52 @@
+<ion-header class="ion-no-border shadow">
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row class="ion-text-center">
+        <ion-col size="2" (click)="closeModal()">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </ion-col>
+        <ion-col size="8">
+          <ion-label>
+            Interests Received
+          </ion-label>
+        </ion-col>
+        <ion-col size="2"></ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="loader" *ngIf="showLoader">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+  <ion-list *ngIf="interestedLists.length > 0">
+    <ion-item>
+      <ion-grid>
+        <ion-row *ngFor="let people of interestedLists">
+          <ion-col size="1"></ion-col>
+          <ion-col size="7" style="font-size: 18px;">
+            <ion-icon name="person-circle-outline" style="font-size: 14px;"></ion-icon>&nbsp;{{people.user_name}}</ion-col>
+          <ion-col size="1" (click)="callPerson(people.mobile_no)">
+            <ion-icon name="call" style="color: #961175; font-size: 24px;"></ion-icon>
+          </ion-col>
+          <ion-col size="1"></ion-col>
+          <ion-col size="1">
+            <a href="https://wa.me/+91{{people.mobile_no}}" style="color:green;text-decoration: none" >
+              <ion-icon name="logo-whatsapp" style=" font-size: 24px;"></ion-icon>
+            </a>
+          </ion-col>
+          <ion-col size="1"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-list>
+  <div *ngIf="interestedLists.length == 0">
+    <ion-row class="ion-text-center">
+      <ion-col size="12">
+        <ion-label>
+          No interest received yet!
+        </ion-label>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

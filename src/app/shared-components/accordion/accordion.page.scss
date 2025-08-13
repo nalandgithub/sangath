@@ -1,0 +1,9 @@
+div.accordion-container {
+    overflow:hidden;
+    transition:max-height 0.5s ease-in-out;
+    height:auto;
+  }
+  
+  div.accordion-container.collapsed {
+    max-height: 0 !important;
+  }

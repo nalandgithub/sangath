@@ -1,0 +1,10 @@
+
+node_modules
+www
+package-lock.json
+iOS_Builds
+important_files/jks_credentials.txt
+important_files/private_key.pepk
+important_files/sangath.jks
+*.pbxproj
+src/app/components/.DS_Store

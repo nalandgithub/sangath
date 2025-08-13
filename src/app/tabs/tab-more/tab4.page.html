@@ -1,0 +1,31 @@
+<ion-header class="ion-no-border shadow">
+  <ion-toolbar class="ion-text-center">
+    <ion-label>
+      <img src="assets/sangath-invert.png" style="height: 47px;padding-top: 5px;">
+    </ion-label>
+  </ion-toolbar>
+</ion-header>
+<h3 *ngIf="currentModule == 'my-profile'" style="text-align: center;color:#961175">My Profile</h3>
+<h3 *ngIf="currentModule == 'feedbacks'" style="text-align: center;color:#961175">My Feedbacks</h3>
+<h3 *ngIf="currentModule == 'subscriptions'" style="text-align: center;color:#961175">My Subscriptions</h3>
+<h3 *ngIf="currentModule == 'settings'" style="text-align: center;color:#961175">Settings</h3>
+<h3 *ngIf="currentModule == 'contact-us'" style="text-align: center;color:#961175">Contact Us</h3>
+<h3 *ngIf="currentModule == 'faqtnc'" style="text-align: center;color:#961175">FAQs</h3>
+<h3 *ngIf="currentModule == 'history'" style="text-align: center;color:#961175">History</h3>
+<h3 *ngIf="currentModule == 'notifications'" style="text-align: center;color:#961175">Notifications</h3>
+<h3 *ngIf="currentModule == 'add-member'" style="text-align: center;color:#961175">Add New Member</h3>
+<h3 *ngIf="currentModule == 'upload-image'" style="text-align: center;color:#961175">Upload Image</h3>
+<div class="tab4-wrapper">
+  <ion-content style="border-top:2px solid black ;">
+    <my-profile *ngIf="currentModule == 'my-profile'"></my-profile>
+    <app-feedbacks *ngIf="currentModule == 'feedbacks'"></app-feedbacks>
+    <app-subscriptions *ngIf="currentModule == 'subscriptions'"></app-subscriptions>
+    <app-settings *ngIf="currentModule == 'settings'"></app-settings>
+    <app-contact-us *ngIf="currentModule == 'contact-us'"></app-contact-us>
+    <app-faqtnc *ngIf="currentModule == 'faqtnc'"></app-faqtnc>
+    <app-history *ngIf="currentModule == 'history'"></app-history>
+    <app-notifications *ngIf="currentModule == 'notifications'"></app-notifications>
+    <add-member *ngIf="currentModule == 'add-member'"></add-member>
+    <upload-image *ngIf="currentModule == 'upload-image'"></upload-image>
+  </ion-content>
+</div>

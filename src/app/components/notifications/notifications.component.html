@@ -1,0 +1,44 @@
+<ion-grid>
+  <ion-row>
+    <ion-card *ngFor="let notification of notifications" style="width:100%;border : 1px solid black;margin:7px 16px">
+      <ion-card-content (click)="onClickNotification(notification.type)">
+        <ion-list>
+          <ion-row>
+            <ion-col style="flex:60%;width: 60%;">
+              <p [innerHtml]="displayHtml(notification.title)" style="color:#961175;"></p>
+            </ion-col>
+            <ion-col style="flex:40%;width: 40%;">
+              <p style="text-align: right;font-size: 12px;">{{notification.date | date:"dd-MMM-yyyy"}}</p>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col style="flex:90%;width: 90%;text-align: right;">
+              <ion-item>
+                <p [innerHtml]="displayHtml(notification.message)" style="font-size: 12px;text-align: justify;">
+                  
+                </p>
+              </ion-item>
+            </ion-col>
+            <!-- <ion-col style="flex:10%;width: 10%;">
+              <div *ngIf="notification.is_read == 0">
+                <span class="dot"></span>
+              </div>
+            </ion-col> -->
+          </ion-row>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </ion-row>
+</ion-grid>
+<ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+  <ion-refresher-content></ion-refresher-content>
+</ion-refresher>
+<style>
+  .dot {
+    height: 5px;
+    width: 5px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+  }
+</style>

@@ -1,0 +1,98 @@
+<div class="loader" *ngIf="showLoader">
+    <ion-spinner color="primary"></ion-spinner>
+</div>
+<ion-grid>
+    <ion-row>
+        <ion-col>
+            <ion-list>
+                <!-- <ion-item> -->
+                <ion-row>
+                    <ion-col size="1">
+                        <ion-label>
+                            #
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size="5">
+                        <ion-label>
+                            Subscription
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-label>
+                            Start Date
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-label>
+                            End Date
+                        </ion-label>
+                    </ion-col>
+                </ion-row>
+                <!-- </ion-item> -->
+                <!-- <ion-item > -->
+                <ion-row *ngFor="let mySub of mySubscriptions;let i = index">
+                    <ion-col size="1">
+                        <ion-label>
+                            {{i + 1}}
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size="5">
+                        <ion-label>
+                            {{mySub.subscription_name}}
+                            <br>
+                            <div style="text-align: left;" *ngIf="mySub.status == 0">
+                                <ion-badge style="color: white;background: red;">Pending</ion-badge>
+                            </div>
+                            <div style="text-align: left;" *ngIf="mySub.status == 1">
+                                <ion-badge style="color: white;background: green;">Active</ion-badge>
+                            </div>
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-label>
+                            {{mySub.start_date | date:"dd-MMM-yyyy"}}
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-label>
+                            {{mySub.end_date | date:"dd-MMM-yyyy"}}
+                        </ion-label>
+                    </ion-col>
+                </ion-row>
+                <!-- </ion-item> -->
+            </ion-list>
+        </ion-col>
+    </ion-row>
+    <hr />
+    <ion-row>
+        <ion-label>**Subscription Module is not active for now. You can enjoy free service for now.**</ion-label>
+    </ion-row>
+    <!-- <ion-row *ngIf="mySubscriptions" class="ion-text-center">
+        <ion-col *ngIf="mySubscriptions.length>0 && mySubscriptions[0].status == 1">
+            <ion-label style="font-size:16px!important;margin-bottom:10px ;">Subscribe to New Plan : </ion-label>
+            <ion-icon name="information-circle-sharp"
+                style="padding-top: 17px;padding-right:10px;font-size: 15px;color: blue;"
+                (click)="presentInfoPopover4($event)">
+            </ion-icon>
+            <ion-select [interfaceOptions]="customActionSheetOptions" interface="action-sheet"
+                placeholder="Select Subscription Plan" (ionChange)="onSelectPlan($event)"
+                style="border: 1px solid;border-radius: 25px;padding-bottom:10px ">
+                <ion-select-option *ngFor="let sub of subscriptions" value="{{sub.id}}">{{sub.subscription_name}}
+                </ion-select-option>
+            </ion-select>
+            <ion-button [disabled]="!currentSelectSubPlan" (click)="openActivateSubscription()">Request Activation
+            </ion-button>
+
+        </ion-col>
+        <ion-col *ngIf="mySubscriptions.length > 0 && mySubscriptions[0].status == 0">
+            <ion-label> **You have requested for the subscription plan. Please wait while its being reviewed and confirmed by the admin panel.**</ion-label>
+        </ion-col>
+    </ion-row> -->
+</ion-grid>
+<style>
+    ion-label {
+        white-space: normal !important;
+        font-size: 12px !important;
+        text-align: center !important;
+    }
+</style>

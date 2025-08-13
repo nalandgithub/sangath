@@ -1,0 +1,26 @@
+<div class="loader" *ngIf="showLoader">
+  <ion-spinner color="primary"></ion-spinner>
+</div>
+<div class="popup-wrapper">
+  <div style="padding: 20px">
+    <div class="loader" *ngIf="showLoader">
+      <ion-spinner color="primary"></ion-spinner>
+    </div>
+    <ion-grid *ngIf="!showLoader" style="color: black;">
+      <form >
+        <ion-item>
+          <ion-label floating style="color: #961175;">Image : </ion-label>
+          <ion-input type="file" name="img" [(ngModel)]="image" (change)="onFileSelect($event)" ngDefaultControl></ion-input>
+        </ion-item>
+        <div style="text-align: center;">
+          <ion-button class="ion-text-center" (click)="submitImage()" style="text-transform: none;width: 50%;">
+            Submit
+          </ion-button>
+        </div>
+      </form>
+    </ion-grid>
+    <img id="previewImage" *ngIf="currentFile">
+    <img src="{{image}}" *ngIf="!currentFile">
+    
+  </div>
+</div>

@@ -1,0 +1,129 @@
+import { Injectable } from '@angular/core';
+
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpResponse,
+} from '@angular/common/http';
+import { Observable, throwError, from } from 'rxjs';
+import { catchError, mergeMap, tap } from 'rxjs/operators';
+import { request } from 'http';
+import { NavController } from '@ionic/angular';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService implements HttpInterceptor {
+  authToken: string;
+  constructor(private navCtrl: NavController) { }
+
+  setAuthToken(token) {
+    this.authToken = token;
+    localStorage.setItem('authToken', token);
+  }
+
+  getAuthToken() {
+    return localStorage.getItem('authToken');
+  }
+
+  // intercept(
+  //   req: HttpRequest<any>,
+  //   next: HttpHandler
+  // ): Observable<HttpEvent<any>> {
+  //   const idToken = localStorage.getItem('authToken');
+
+  //   if (idToken) {
+  //     req = req.clone({
+  //       headers: req.headers.set('Authorization', 'Bearer ' + idToken),
+  //     });
+  //   }
+
+  //   return next.handle(req).pipe(
+  //     /* to retry and timeout 
+  //    retry(2),
+  //    timeout(100),  */
+
+  //     tap((event: HttpEvent<any>) => {
+  //       if (
+  //         event instanceof HttpResponse &&
+  //         (event.status === 200 || event.status === 201)
+  //       ) {
+  //         console.log('success full api call and recived response');
+  //       }
+  //     }),
+  //     catchError((errResponse: HttpErrorResponse) => {
+  //       if (errResponse.status === 401) {
+  //       }
+
+  //       if (errResponse.status === 403) {
+  //         //data: "Balance Security Check Failed"
+  //         //security_flag: false;
+
+  //         localStorage.removeItem('authToken');
+  //         localStorage.removeItem('user-colife');
+  //         this.navCtrl.navigateBack('registration');
+  //       }
+  //       const err = errResponse?.error?.error;
+  //       console.error('Error  ====>', errResponse);
+  //       console.error('Error Text  ====>', err);
+  //       return throwError(errResponse);
+  //     })
+  //   );
+  // }
+
+  // // Intercepts all HTTP requests!
+  // intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  //   console.log(localStorage.getItem("authToken"));
+
+  //   if (this.authToken != undefined) {
+  //     let promise = this.authToken;
+  //     console.log(promise)
+  //     return from(promise).pipe(mergeMap(token => {
+  //       let clonedReq = this.addToken(request, token);
+  //       return next.handle(clonedReq).pipe(
+  //         catchError(error => {
+  //           // let msg = error.message;
+  //           // const alert = this.alertCtrl.create({
+  //           //   header: error.name,
+  //           //   message: msg,
+  //           //   buttons: ['Dismiss']
+  //           // });
+  //           //  alert.present();
+
+  //           // Pass the error to the caller of the function
+  //           return throwError(error);
+  //         })
+  //       );
+  //     }));
+
+  //   }
+  //   else {
+  //     return next.handle(request);
+  //   }
+  // }
+
+  // Adds the token to your headers if it exists
+  // private addToken(request: HttpRequest<any>, token: any) {
+  //   console.log(token);
+
+  //   if (token) {
+  //     // let clone: HttpRequest<any>;
+  //     // clone = request.clone({
+  //     //   setHeaders: {
+  //     //     'Content-Type': `application/json`,
+  //     //     Authorization: `Bearer ${token}`
+  //     //   }
+  //     // });
+  //     const clone = request.clone({
+  //       headers: request.headers.set("Authorization",
+  //         `Bearer ${token}`)
+  //     });
+  //     return clone;
+  //   }
+
+  //   return request;
+  // }
+}

@@ -1,0 +1,268 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="ion-text-center" style="padding-bottom: 10px">
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col class="ion-no-padding" style="background-color: #961175">
+          <ion-label>
+            <img src="assets/sangath-invert.png" style="height: 47px; padding-top: 5px" />
+          </ion-label>
+        </ion-col>
+      </ion-row>
+      
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-grid class="ion-text-center" style="padding-top:10px;width: 100%;max-height: 50px;">
+  <ion-row>
+    <ion-col class="ion-no-padding">
+      <ion-segment
+        [(ngModel)]="segment"
+        (ionChange)="segmentChanged($event)"
+        mode="ios"
+        style="background: #961175; width: 70%; min-height: 25px;margin: 0 auto;"
+      >
+        <ion-segment-button value="0">
+          <ion-label [ngClass]="segment == 0 ? 'col-black' : 'col-white' ">
+            <b>My Friends</b>
+          </ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="1">
+          <ion-label [ngClass]="segment == 1 ? 'col-black' : 'col-white' ">
+            <b>Pending Requests</b>
+          </ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+
+<ion-content>
+  <div class="loader" *ngIf="showLoader">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+  
+  <div *ngIf="!showLoader">
+    <ion-slides
+      #slides
+      (ionSlideDidChange)="slideChanged()"
+      style="padding-top: 10px"
+    >
+    <ion-slide>
+      <ion-grid>
+        <ion-row *ngFor="let friend of friends">
+          <ion-item style="width: 100%">
+            <ion-col size="8">
+              <ion-label style="font-size: 16px">
+                <ion-icon
+                  name="person-circle-outline"
+                  style="font-size: 14px"
+                ></ion-icon>
+                &nbsp;{{friend.sender_id ==
+                this.cmnService.getLoggedInUserId() ? friend.receiver :
+                friend.sender}}
+              </ion-label>
+            </ion-col>
+
+            <ion-col class="ion-text-center" size="2">
+              <ion-icon
+                name="checkmark-circle"
+                style="color: green"
+              ></ion-icon>
+            </ion-col>
+            <ion-col class="ion-text-center" size="2">
+              <ion-icon
+                name="ellipsis-vertical"
+                (click)="openMoreMenu($event,friend)"
+              ></ion-icon>
+            </ion-col>
+          </ion-item>
+        </ion-row>
+        <ion-row *ngIf="friends.length < 1">
+          <ion-item style="width: 100%">
+            <ion-col>
+              <ion-label> No new Friends ! </ion-label>
+            </ion-col>
+          </ion-item>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+      <ion-slide>
+        <ion-grid>
+          <ion-row *ngFor="let pendingFrnd of pendingFrnds">
+            <ion-item style="width: 100%">
+              <ion-col size="8">
+                <ion-label>
+                  <ion-icon
+                    name="person-circle-outline"
+                    style="font-size: 14px"
+                  ></ion-icon>
+                  &nbsp;{{ pendingFrnd.sender_id ==
+                  this.cmnService.getLoggedInUserId() ? pendingFrnd.receiver :
+                  pendingFrnd.sender}}
+                </ion-label>
+              </ion-col>
+              <ion-col
+                size="4"
+                class="ion-text-center"
+                *ngIf="pendingFrnd.status == 0"
+              >
+                <div
+                  *ngIf="!pendingFrnd['tempStatus'] && pendingFrnd.sender_id != this.cmnService.getLoggedInUserId()"
+                >
+                  <ion-icon
+                    name="checkmark-circle-outline"
+                    (click)="friendRequestAction(pendingFrnd,'A')"
+                    style="font-size: 22px; color: green; padding-right: 5px"
+                  ></ion-icon>
+                  <ion-icon
+                    name="close-circle-outline"
+                    (click)="friendRequestAction(pendingFrnd,'R')"
+                    style="font-size: 22px; color: red; padding-left: 5px"
+                  ></ion-icon>
+                </div>
+                <div
+                  *ngIf="pendingFrnd.sender_id == this.cmnService.getLoggedInUserId()"
+                >
+                  <ion-button (click)="onCancelRequest(pendingFrnd)">
+                    Cancel
+                  </ion-button>
+                </div>
+                <div
+                  *ngIf="pendingFrnd['tempStatus'] && pendingFrnd['tempStatus'] == 'I'"
+                >
+                  <ion-spinner name="dots"></ion-spinner>
+                </div>
+                <div
+                  *ngIf="pendingFrnd['tempStatus'] == 'A' || pendingFrnd['tempStatus'] == 'R'"
+                >
+                  <ion-label
+                    >{{pendingFrnd['tempStatus'] == 'A' ? 'Accepted' :
+                    'Rejected'}}</ion-label
+                  >
+                </div>
+              </ion-col>
+              <ion-col size="3" *ngIf="pendingFrnd.status == 1">
+                <ion-icon
+                  name="ellipsis-horizontal"
+                  (click)="friendRequestAction(pendingFrnd,'accept')"
+                ></ion-icon>
+              </ion-col>
+            </ion-item>
+          </ion-row>
+          <ion-row *ngIf="pendingFrnds.length < 1">
+            <ion-item style="width: 100%;text-align: center;">
+              <ion-col>
+                <ion-label> No new Pending requests ! </ion-label>
+              </ion-col>
+            </ion-item>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+      
+    </ion-slides>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+  </div>
+  <!-- <ion-list>
+    <ion-grid>
+      <ion-card>
+        <ion-card-content>
+
+          <div class="ion-text-center">
+            <ion-label style="font-size: 22px;padding-bottom: 10px;">
+              <u>Pending Requests</u>
+            </ion-label>
+          </div>
+
+          <ion-row *ngFor="let pendingFrnd of pendingFrnds">
+            <ion-item style="width: 100%;">
+              <ion-col size="8">
+                <ion-label>
+                  <ion-icon name="person-circle-outline" style="font-size: 14px;"></ion-icon>
+                  &nbsp;{{ pendingFrnd.sender_id == this.cmnService.getLoggedInUserId() ? pendingFrnd.receiver :
+                  pendingFrnd.sender}}
+                </ion-label>
+              </ion-col>
+              <ion-col size="4" class="ion-text-center" *ngIf="pendingFrnd.status == 0">
+                <div *ngIf="!pendingFrnd['tempStatus'] && pendingFrnd.sender_id != this.cmnService.getLoggedInUserId()">
+                  <ion-icon name="checkmark-circle-outline" (click)="friendRequestAction(pendingFrnd,'A')"
+                    style="font-size: 22px;color: green;padding-right: 5px;"></ion-icon>
+                  <ion-icon name="close-circle-outline" (click)="friendRequestAction(pendingFrnd,'R')"
+                    style="font-size: 22px;color: red;padding-left: 5px;"></ion-icon>
+                </div>
+                <div *ngIf="pendingFrnd.sender_id == this.cmnService.getLoggedInUserId()">
+                  <ion-button (click)="onCancelRequest(pendingFrnd)">
+                    Cancel
+                  </ion-button>
+                </div>
+                <div *ngIf="pendingFrnd['tempStatus'] && pendingFrnd['tempStatus'] == 'I'">
+                  <ion-spinner name="dots"></ion-spinner>
+                </div>
+                <div *ngIf="pendingFrnd['tempStatus'] == 'A' || pendingFrnd['tempStatus'] == 'R'">
+                  <ion-label>{{pendingFrnd['tempStatus'] == 'A' ? 'Accepted' : 'Rejected'}}</ion-label>
+                </div>
+              </ion-col>
+              <ion-col size="3" *ngIf="pendingFrnd.status == 1">
+                <ion-icon name="ellipsis-horizontal" (click)="friendRequestAction(pendingFrnd,'accept')"></ion-icon>
+              </ion-col>
+            </ion-item>
+          </ion-row>
+          <ion-row *ngIf="pendingFrnds.length < 1">
+            <ion-item style="width: 100%;">
+              <ion-col>
+                <ion-label>
+                  No new requests !
+                </ion-label>
+              </ion-col>
+            </ion-item>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+      <hr style="border:1px solid black"> -->
+
+  <!-- <ion-card>
+        <ion-card-content>
+      <div class="ion-text-center" style="padding-top: 22px;">
+        <ion-label style="font-size: 24px;">
+          <u>My Friends</u>
+        </ion-label>
+      </div>
+      <ion-row *ngFor="let friend of friends">
+        <ion-item style="width: 100%;">
+          <ion-col size="8">
+            <ion-label style="font-size: 16px;">
+              <ion-icon name="person-circle-outline" style="font-size: 14px;"></ion-icon>
+              &nbsp;{{friend.sender_id == this.cmnService.getLoggedInUserId() ? friend.receiver :
+              friend.sender}}
+            </ion-label>
+          </ion-col>
+
+          <ion-col class="ion-text-center" size="2">
+            <ion-icon name="checkmark-circle" style="color: green;"></ion-icon>
+            <ion-icon name="ellipsis-horizontal"></ion-icon>
+          </ion-col>
+          <ion-col class="ion-text-center" size="2">
+            <ion-icon name="ellipsis-vertical" (click)="openMoreMenu($event,friend)"></ion-icon>
+            <ion-icon name="ellipsis-horizontal"></ion-icon>
+          </ion-col>
+        </ion-item>
+      </ion-row>
+      <ion-row *ngIf="friends.length < 1">
+        <ion-item style="width: 100%;">
+          <ion-col>
+            <ion-label>
+              No new Friends !
+            </ion-label>
+          </ion-col>
+        </ion-item>
+
+      </ion-row>
+      </ion-card-content>
+      </ion-card>
+    </ion-grid>
+  </ion-list>  -->
+  
+</ion-content>

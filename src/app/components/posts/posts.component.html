@@ -1,0 +1,11 @@
+<div *ngIf="data && data.length == 0 && module != 'history'" class="ion-text-center">
+  No Active Posts Found !
+</div>
+<div *ngIf="data && data.length == 0 && module == 'history'" class="ion-text-center">
+  No Posts Found
+</div>
+<div *ngIf="data && data.length != 0">
+  <div *ngFor="let eachData of data" class="ion-text-center">
+    <app-post-card [detail]="eachData" [module]="module"></app-post-card>
+  </div>
+</div>

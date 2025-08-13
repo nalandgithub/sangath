@@ -1,0 +1,44 @@
+<ion-grid>
+  <ion-row>
+    <!-- <ion-card style="width: 100%;"> -->
+    <!-- <ion-card-content> -->
+    <ion-col class="ion-text-center">
+      <!-- <form> -->
+      <!-- <ion-row>
+                      <ionic-rating-component #rating activeIcon="star" defaultIcon="star-outline" activeColor="#961175"
+                        defaultColor="#961175" readonly="false" rating="0" fontSize="32px"
+                        (ratingChanged)="onRatingChange($event)">
+                      </ionic-rating-component>
+                    </ion-row> -->
+      <!-- <ion-item>
+          
+              <ion-textarea placeholder="Enter your feedbacks...." autoGrow="true" name="feedback" [(ngModel)]="feedback"
+                ngDefaultControl>
+              </ion-textarea>
+            </ion-item>
+            <ion-button class="ion-text-center" (click)="submitFeedback()" style="text-transform: none;">
+              Submit
+            </ion-button>
+          </form> -->
+      <form>
+        <ion-button (click)="openAddFeedbackModal()" style="text-transform: none;">
+          <ion-icon slot="start" name="add"></ion-icon>Add new Feedback
+        </ion-button>
+      </form>
+    </ion-col>
+    <!-- </ion-card-content> -->
+    <!-- </ion-card> -->
+    <ion-card style="width: 100%;">
+      <!-- <ion-card-header class="ion-text-center">
+        My Feedbacks
+      </ion-card-header> -->
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let myfeedback of feedbacks">
+            - {{myfeedback.query}}
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </ion-row>
+</ion-grid>

@@ -1,0 +1,136 @@
+<!-- <div class="ion-text-center" style="padding-top: 5px;font-size: 16px;background: #961175;">
+  <ion-label>
+    <b style="color: white;">My Profile</b>
+  </ion-label>
+</div> -->
+<div class="loader" *ngIf="showLoader">
+  <ion-spinner color="primary"></ion-spinner>
+</div>
+<ion-grid style="margin: 10px;" *ngIf="userProfileData">
+  <ion-row>
+    <ion-col style="flex:50%;width: 50%;">
+      <ion-label>Sangath ID : </ion-label>
+    </ion-col>
+
+    <ion-col style="flex:40%;width: 40%;text-align: right;">
+      <!-- <ion-icon name="copy-outline" (click)="copyText(userProfileData.sangath_id)" style="padding-right: 5px;"></ion-icon> -->
+      <span style="color: #961175;" (click)="copyText(userProfileData.sangath_id)">{{userProfileData.sangath_id}}</span>
+    </ion-col>
+
+  </ion-row>
+
+  <ion-row>
+    <ion-col style="flex:50%;width: 50%;">
+      Name :
+    </ion-col>
+    <ion-col style="flex:50%;width: 50%;text-align: right;">
+      {{userProfileData.user_name}}
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col style="flex:50%;width: 50%;">
+      Mobile No. :
+    </ion-col>
+    <ion-col style="flex:50%;width: 50%;text-align: right;">
+      <span style="color: #961175;">+91 {{userProfileData.mobile_no}}</span>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col style="flex:25%;width: 25%;">
+      Mail Id :
+    </ion-col>
+    <ion-col style="flex:75%;width: 75%;text-align: right;">
+      {{userProfileData.email}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col style="flex:50%;width: 50%;">
+      Member Since :
+    </ion-col>
+    <ion-col style="flex:50%;width: 50%;text-align: right;">
+      {{userProfileData.date | date:"dd-MMM-yyyy"}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <!-- <ion-col style="flex:50%;width: 50%;">
+      Subscribed Till :
+    </ion-col>
+    <ion-col style="flex:50%;width: 50%;text-align: right;">
+      {{userProfileData.end_date | date:"dd-MMM-yyyy"}}
+    </ion-col> -->
+  </ion-row>
+
+  <!-- <ion-row>
+    <ion-col style="flex:50%;width: 50%;">
+      Friends :
+    </ion-col>
+    <ion-col style="flex:50%;width: 50%;text-align: right;">
+      {{userProfileData.friends}}
+    </ion-col>
+  </ion-row> -->
+  <!-- <ion-row>
+    <ion-col style="flex:50%;width: 50%;">
+      Total Posts :
+    </ion-col>
+    <ion-col style="flex:50%;width: 50%;text-align: right;">
+      {{userProfileData.posts}}
+    </ion-col>
+  </ion-row> -->
+  <ion-row>
+    <ion-col style="flex:100%;width: 100%;text-align: center;">
+      <ion-button (click)="presentAlertPrompt()" style="text-transform: none;">
+        <ion-icon name="person-add-outline"></ion-icon>
+        &nbsp;Add friend
+      </ion-button>
+      <ion-icon name="information-circle-sharp"
+        style="padding-top: 17px;padding-right:10px;font-size: 20px;color: blue;" (click)="presentInfoPopover($event)">
+      </ion-icon>
+      <!-- <ion-icon name="information-circle-sharp" style="padding-top: 22px;font-size: 20px;"></ion-icon> -->
+    </ion-col>
+    <!-- <ion-col style="flex:30%;width: 30%;text-align: left;">
+      
+
+    </ion-col> -->
+  </ion-row>
+</ion-grid>
+
+
+<p>**Click on Sangath ID to copy it</p>
+
+<ion-footer>
+  <div *ngIf="userProfileData?.user_type == '0' || userProfileData?.user_type == '3'">
+    <ion-row>
+      <ion-col style="text-align: center;">
+        <p class="ion-text-center">
+          <ion-select [(ngModel)]="userModel" [interfaceOptions]="customActionSheetOptions" interface="action-sheet"
+            placeholder="Select User" (ionChange)="onSelectPlan($event)"
+            style="border: 1px solid;border-radius: 25px;padding-bottom:10px ">
+            <ion-select-option value="{{userProfileData?.user_id}}">My ID</ion-select-option>
+            <ion-select-option *ngFor="let user of userlist" value="{{user.user_id}}">{{user.user_name}}
+            </ion-select-option>
+          </ion-select>
+        </p>
+      </ion-col>
+      <ion-col style="text-align: center;">
+        <p class="ion-text-center">
+          <a (click)="onClickGenerateLink()">
+            Generate link to add member
+          </a>
+        </p>
+      </ion-col>
+    </ion-row>
+  </div>
+  <div *ngIf="userProfileData?.user_type == '2'">
+    <ion-row>
+      <ion-col style="text-align: center;">
+        <p class="ion-text-center">
+          <a (click)="onClickGenerateLink()">
+            Generate link to add member
+          </a>
+        </p>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-footer>

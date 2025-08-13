@@ -1,0 +1,78 @@
+.student-name-chip1 {
+  background: none;
+  padding: 0px 8px 0px 8px;
+  margin-left: -15px;
+}
+.student-name-chip2 {
+  background: none;
+  padding: 0px 8px 0px 0px;
+}
+.asked-to-guru {
+  display: flex;
+  justify-content: flex-end;
+  text-align: end;
+}
+.search-icon {
+  text-align: end;
+}
+.student-name {
+  font-size: 12px;
+  color: #000000de;
+  background: none;
+}
+.asked-to {
+  font-size: 10px;
+  color: #6c6c6c;
+}
+.guru-card-time {
+  font-size: 14px;
+  color: #6c6c6c;
+}
+.main-content {
+  font-weight: 600;
+  display:block;
+  font-size: 16px;
+  color: #252525;
+}
+.main-discription {
+  font-size: 14px;
+  color: #252525;
+  display: block;
+  padding-top: 2px;
+}
+.content {
+  padding-left: 0px;
+}
+
+.selected {
+  color: #ed0b70;
+  font-weight: 600;
+}
+
+.guru-answer {
+  color: #252525;
+  overflow: scroll;
+  height: 40px;
+  font-size: 12px;
+}
+
+.guru-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #000000de;
+}
+.guru-time {
+  font-size: 10px;
+  color: #6c6c6c;
+  padding-top: 5px;
+}
+hr {
+  border:none;
+  height: 20px;
+  width: 100%;
+  height: 54px;
+  margin-top: 0;
+  border-bottom: 1px solid lightgrey;
+  box-shadow: 0px 10px 10px 0px lightgrey;
+  margin: -50px auto 10px; 
+}

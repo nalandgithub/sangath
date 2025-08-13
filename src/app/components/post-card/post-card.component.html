@@ -1,0 +1,158 @@
+<ion-card style="text-align: justify;border:1px solid darkgrey">
+  <ion-card-content *ngIf="detail.identifier == 1" style="padding-top: 10px;padding-bottom:3px">
+    <ion-row>
+      <ion-label style="font-size: 16px;text-align: justify;">
+        <ion-icon name="car-sport-outline" style="font-size: 13px;"> </ion-icon> &nbsp;Car travelling from <b
+          style="color: #3d0505;">{{detail.from}}</b> to <b style="color: navy;">{{detail.to}}</b> at <span
+          *ngIf="detail.time == 1">morning</span><span *ngIf="detail.time == 2">afternoon</span><span
+          *ngIf="detail.time == 3">evening</span> of <span style="color: black;">{{detail.travel_date |
+          date:"dd-MMM-yyyy"}}</span>
+        <br> <span *ngIf="detail.notes" style="font-size:10px;">Notes: {{detail.notes}}</span>
+      </ion-label>
+    </ion-row>
+    <ion-row style="padding-top: 10px;padding-bottom:3px;font-size: 13px;" *ngIf="module != 'my-post'">
+      <ion-col size="6" *ngIf="module != 'history'">
+        <ion-spinner name="dots" *ngIf="clickedInterested"></ion-spinner>
+        <ion-text color="dark" *ngIf="!clickedInterested && detail.interest == 0" (click)="sendInterest(detail)"
+          style="border: 1px solid;border-radius: 25px;text-align: center;padding: 5px;">
+          <ion-icon name="thumbs-up-outline" style="font-size: 13px;color: #961175;"></ion-icon>
+          Show Interest
+        </ion-text>
+        <ion-text color="primary" *ngIf="!clickedInterested && detail.interest == 1" (click)="revokeInterest(detail)"
+          style="border: 1px solid;border-radius: 25px;text-align: center;padding: 5px;">
+          <ion-icon name="checkmark-sharp" style="font-size: 13px;"></ion-icon>
+          Interested.
+        </ion-text>
+      </ion-col>
+      <ion-col size="5" *ngIf="module != 'history'"></ion-col>
+      <!-- <ion-col size="4" *ngIf="module == 'my-post' && detail.post_status == 0"
+        style="text-align: right;padding-top: 20px;">
+        <ion-badge style="color: white;background: red;">Expired</ion-badge>
+      </ion-col> -->
+      <ion-col size="1" *ngIf="module != 'history' && detail.is_friend == 1">
+        <ion-icon name="people-outline" (click)="presentInfoPopover2($event)" style="color: #961175;"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <ion-row style="padding-top: 10px;padding-bottom:3px;font-size: 13px;" *ngIf="module == 'my-post'">
+      <ion-col size="4" style="text-align: left;">
+        <ion-button (click)="redirectToDetails()" style="color: white;text-transform: none;">
+          Interests
+        </ion-button>
+      </ion-col>
+      <ion-col size="4" style="text-align:left;">
+        <ion-icon name="information-circle-sharp"
+          style="padding-top: 15px;padding-right:10px;font-size: 20px;color: blue;"
+          (click)="presentInfoPopover3($event)">
+        </ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-card-content>
+  <ion-card-content *ngIf="detail.identifier == 0 && detail.select_option == 0" style="padding-top: 10px;padding-bottom: 3px;">
+    <ion-label style="text-align: justify;font-size: 16px;">
+      <ion-icon name="person-outline" style="font-size: 13px;"> </ion-icon>
+      &nbsp;{{detail.user_name}} wants to travel from <b style="color: #3d0505;">{{detail.from}}</b> to <b
+        style="color:navy;">{{detail.to}}</b> at <span *ngIf="detail.time == 1">morning</span><span
+        *ngIf="detail.time == 2">afternoon</span><span *ngIf="detail.time == 3">evening</span> of <span
+        style="color: black;">{{detail.travel_date | date:"dd-MMM-yyyy"}}</span>
+      <br> <span *ngIf="detail.notes" style="font-size:10px;">Notes: {{detail.notes}}</span>
+    </ion-label>
+    <ion-row *ngIf="module != 'my-post' && module != 'history'"
+      style="padding-top: 10px;padding-bottom: 3px;font-size: 13px;">
+      <ion-col size="2" (click)="callPerson(detail.mobile_no)">
+        <ion-text color="primary">
+          <ion-icon name="call" style="font-size: 20px;"></ion-icon>
+        </ion-text>
+      </ion-col>
+      <ion-col size="2">
+        <ion-text color="primary">
+          <a href="https://wa.me/+91{{detail.mobile_no}}" style="color:green;text-decoration:none">
+            <ion-icon name="logo-whatsapp" style="font-size: 20px;"></ion-icon>
+          </a>
+        </ion-text>
+      </ion-col>
+      <ion-col size="6"></ion-col>
+      <ion-col size="1" *ngIf="detail.lady == 1">
+        <ion-icon name="woman-outline" (click)="presentInfoPopover4($event)" style="color: #961175;"></ion-icon>
+      </ion-col>
+      <ion-col size="1"  *ngIf="detail.lady == 0"></ion-col>
+      <ion-col size="1" *ngIf="module != 'my-post' && module != 'history' && detail.is_friend == 1">
+
+        <ion-icon name="people-outline" (click)="presentInfoPopover2($event)" style="color: #961175;"></ion-icon>
+
+      </ion-col>
+    </ion-row>
+    <!-- <ion-row>
+      <ion-col size="8"></ion-col>
+      <ion-col size="4" *ngIf="module == 'my-post' && detail.post_status == 0 "
+        style="text-align: right;padding-top: 20px;">
+        <ion-badge style="color: white;background: red;">Expired</ion-badge>
+      </ion-col>
+    </ion-row> -->
+
+  </ion-card-content>
+  <ion-card-content *ngIf="detail.identifier == 0 && detail.select_option == 1" style="padding-top: 10px;padding-bottom: 3px;">
+    <ion-label style="text-align: justify;font-size: 16px;">
+      <ion-icon name="person-outline" style="font-size: 13px;"> </ion-icon>
+      &nbsp;{{detail.user_name}} wants to send a parcel from <b style="color: #3d0505;">{{detail.from}}</b> to <b
+        style="color:navy;">{{detail.to}}</b>
+      <br> <span *ngIf="detail.notes" style="font-size:10px;">Notes: {{detail.notes}}</span>
+    </ion-label>
+    <ion-row *ngIf="module != 'my-post' && module != 'history'"
+      style="padding-top: 10px;padding-bottom: 3px;font-size: 13px;">
+      <ion-col size="2" (click)="callPerson(detail.mobile_no)">
+        <ion-text color="primary">
+          <ion-icon name="call" style="font-size: 20px;"></ion-icon>
+        </ion-text>
+      </ion-col>
+      <ion-col size="2">
+        <ion-text color="primary">
+          <a href="https://wa.me/+91{{detail.mobile_no}}" style="color:green;text-decoration:none">
+            <ion-icon name="logo-whatsapp" style="font-size: 20px;"></ion-icon>
+          </a>
+        </ion-text>
+      </ion-col>
+      <ion-col size="7"></ion-col>
+      <ion-col size="1" *ngIf="module != 'my-post' && module != 'history' && detail.is_friend == 1">
+        <ion-icon name="people-outline" (click)="presentInfoPopover2($event)" style="color: #961175;"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <!-- <ion-row>
+      <ion-col size="8"></ion-col>
+      <ion-col size="4" *ngIf="module == 'my-post' && detail.post_status == 0 "
+        style="text-align: right;padding-top: 20px;">
+        <ion-badge style="color: white;background: red;">Expired</ion-badge>
+      </ion-col>
+    </ion-row> -->
+
+  </ion-card-content>
+  <hr style="border: 1px dotted darkgrey;">
+  <ion-card-header style="padding-bottom: 3px;padding-top: 3px;font-size: 10px;" *ngIf="module != 'my-post' && module != 'history'">
+    <ion-row>
+      <ion-col *ngIf=" detail.identifier == 1">
+        <span *ngIf="detail.incognite == 1" size="6">By : Anonymous</span>
+        <span *ngIf="detail.incognite == 0" size="6">By : {{detail.user_name}}</span>
+      </ion-col>
+
+      <ion-col *ngIf=" detail.identifier == 0">
+        <span size="4">By : {{detail.user_name}}</span>
+      </ion-col>
+
+
+      <ion-col size="8" style="text-align: right;">
+        <ion-icon name="alarm-outline"></ion-icon> : {{ formatDate(detail.dts) | date:"dd-MMM-yyyy hh:mm a"}}
+      </ion-col>
+    </ion-row>
+  </ion-card-header>
+  <ion-card-header style="padding-bottom: 3px;padding-top: 3px;font-size: 10px;" *ngIf="module == 'my-post' || module== 'history'">
+    <ion-row>
+
+      <ion-col size="8" style="text-align: left;">
+        <ion-icon name="alarm-outline"></ion-icon> : {{ formatDate(detail.dts) | date:"dd-MMM-yyyy hh:mm a"}}
+      </ion-col>
+      <ion-col size="4" style="text-align: right;" *ngIf="module == 'my-post'">
+        <ion-icon name="ellipsis-horizontal-outline" style="font-size: 16px;" (click)="openMoreMenu($event,detail)">
+        </ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-card-header>
+</ion-card>

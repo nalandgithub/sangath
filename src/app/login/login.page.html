@@ -1,0 +1,120 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar style="background-color:white">
+    <ion-grid>
+      <ion-row>
+        <ion-col col-2>
+          <ion-buttons *ngIf="otp_screen == true">
+            <ion-button (click)="goBack()">
+              <ion-icon style="color: #ed0b70" name="chevron-back-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+<ion-content style="position: relative">
+  <!-- <div class="back-svg"> -->
+  <!-- <img class="upper-cut" src="assets/icon/upper_cut.png" /> -->
+
+  <ion-grid>
+    <div class="ion-text-center">
+      <ion-label style="font-size: 24px;">Welcome to</ion-label>
+    </div>
+    <div class="ion-text-center">
+      <img class="colife-logo" src="assets/img.png" />
+    </div>
+  </ion-grid>
+  <ion-grid *ngIf="otp_screen != true">
+    <ion-row>
+      <ion-col class="heading center">Enter your registered mobile number</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="place-line">
+        <ion-input [(ngModel)]="mobile_number" (ionChange)="mobile_numberfn(mobile_number)" maxlength="10" type="tel"
+          placeholder="Mobile Number" class="mob_number center"></ion-input>
+      </ion-col>
+
+    </ion-row>
+    <div class="ion-text-center">
+      <span style="font-size:12px">**You will recieve a 6 digit otp on your phone</span>
+    </div>
+    <ion-row>
+      <ion-col class="btn-login center">
+        <!-- <ion-button routerLink="/tabs" (click)="send_otp()">Start</ion-button> -->
+        <ion-button [disabled]="!enableStartButton || showStartLoader" (click)="send_otp()"
+          [ngClass]="enableStartButton ? 'start-btn-active':'start-btn'">
+          <ion-spinner *ngIf="showStartLoader"></ion-spinner>
+          <span *ngIf="!showStartLoader">Submit</span>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid *ngIf="otp_screen == true">
+    <ion-row>
+      <ion-col class="heading center">Enter OTP sent to {{mobile_number}}</ion-col>
+    </ion-row>
+    <ion-row class="center">
+      <ion-col style="display: flex">
+        <!-- <ion-input type="tel" [(ngModel)]="f1" (ionChange)="otp_numberfn(otp1,otp2,otp3,otp4,otp5,otp6)"
+          class="input-otp" #otp1 required maxLength="1" (keyup)="otpController($event,otp2,'')">
+        </ion-input>
+        <ion-input type="tel" [(ngModel)]="f2" (ionChange)="otp_numberfn(otp1,otp2,otp3,otp4,otp5,otp6)"
+          class="input-otp" #otp2 required maxLength="1" (keyup)="otpController($event,otp3,otp1)">
+        </ion-input>
+        <ion-input type="tel" [(ngModel)]="f3" (ionChange)="otp_numberfn(otp1,otp2,otp3,otp4,otp5,otp6)"
+          class="input-otp" #otp3 required maxLength="1" (keyup)="otpController($event,otp4,otp2)">
+        </ion-input>
+        <ion-input type="tel" [(ngModel)]="f4" (ionChange)="otp_numberfn(otp1,otp2,otp3,otp4,otp5,otp6)"
+          class="input-otp" #otp4 required maxLength="1" (keyup)="otpController($event,otp5,otp3)">
+        </ion-input>
+        <ion-input type="tel" [(ngModel)]="f5" (ionChange)="otp_numberfn(otp1,otp2,otp3,otp4,otp5,otp6)"
+          class="input-otp" #otp5 required maxLength="1" (keyup)="otpController($event,otp6,otp4)">
+        </ion-input>
+        <ion-input type="tel" [(ngModel)]="f6" (ionChange)="otp_numberfn(otp1,otp2,otp3,otp4,otp5,otp6)"
+          class="input-otp" #otp6 required maxLength="1" (keyup)="otpController($event,'',otp5)">
+        </ion-input> -->
+        <ion-input type="text" [(ngModel)]="otp" class="input-otp" required>
+        </ion-input>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="!showResendButton" style="
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+      ">
+      OTP not received? Resend OTP in 
+      <b style="color: #961175; margin-left: 10px">{{min}}:{{second}} </b>
+    </ion-row>
+
+    <!-- <ion-row *ngIf="showResendButton">
+      <div style="
+          font-size: 12px;
+          text-align: center;
+          color: red;
+          margin: auto;
+          margin-bottom: 10px;
+        ">
+        Your OTP has expired. Kindly click on resend.
+      </div>
+    </ion-row> -->
+
+    <ion-row *ngIf="showResendButton">
+      <ion-col class="center">
+        <a (click)="onResendOtpClick()" class="resend-otp">Resend OTP</a>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="btn-login center">
+        <ion-button (click)="login()" [disabled]="showLoginLoader " class="start-btn" [ngClass]="'start-btn-active'">
+          <ion-spinner *ngIf="showLoginLoader"></ion-spinner>
+          <span *ngIf="!showLoginLoader">Login</span>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!-- <img class="lower-cut" src="assets/icon/upper_cut.png" /> -->
+</ion-content>

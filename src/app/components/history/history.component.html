@@ -1,0 +1,18 @@
+<!-- <ion-header  class="ion-no-border shadow">
+  <ion-toolbar class="ion-text-center">
+    <ion-label>
+      <img src="assets/img.png" style="height: 47px;padding-top: 5px;">
+    </ion-label>
+  </ion-toolbar>
+</ion-header>
+<h3 style="text-align: center;color: #961175;">My Post History</h3>
+<ion-content>
+  <div class="loader" *ngIf="showLoader">
+    <ion-spinner color="primary"></ion-spinner>
+  </div> -->
+
+<app-posts [data]="allPosts" [module]="'history'"></app-posts>
+<!-- <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher> -->
+<!-- </ion-content> -->
