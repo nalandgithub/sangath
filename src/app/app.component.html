@@ -24,7 +24,7 @@
             </ion-card-content>
           </ion-card>
         </ion-col>
-        <ion-col size="6">
+        <!-- <ion-col size="6">
           <ion-card (click)="redirectFromSideMenu('subscriptions')" style="margin: 6px;">
             <ion-card-content style="padding:14px;text-align:center">
               <ion-icon style="font-size: 32px;color: #85bb65;" name="cash-outline" slot="start"></ion-icon><br>
@@ -33,7 +33,7 @@
               </ion-label>
             </ion-card-content>
           </ion-card>
-        </ion-col>
+        </ion-col> -->
         <ion-col size="6">
           <ion-card (click)="redirectFromSideMenu('feedbacks')" style="margin: 6px;">
             <ion-card-content style="padding:14px;text-align:center">
@@ -113,6 +113,16 @@
               <ion-icon style="font-size: 32px;color: #D4AF37;" name="image-outline" slot="start"></ion-icon><br>
               <ion-label style="font-size: 14px;">
                 Popup Image
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+         <ion-col size="6">
+          <ion-card (click)="logout()" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: danger;" name="log-out-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Logout
               </ion-label>
             </ion-card-content>
           </ion-card>

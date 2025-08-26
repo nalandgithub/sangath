@@ -217,7 +217,12 @@ export class AppComponent implements OnInit {
       autoHide: true,
     });
   }
-
+  logout() {
+     localStorage.clear(); // clears all keys
+     localStorage.removeItem("login-token");
+    this.navCtrl.navigateRoot("/login");
+    
+  }
   redirectFromSideMenu(moduleName: any) {
     this.menuCtrl.toggle();
     this.navCtrl.navigateRoot("/tabs/tabs/tab4", {
