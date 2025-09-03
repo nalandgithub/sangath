@@ -24,26 +24,7 @@
             </ion-card-content>
           </ion-card>
         </ion-col>
-        <!-- <ion-col size="6">
-          <ion-card (click)="redirectFromSideMenu('subscriptions')" style="margin: 6px;">
-            <ion-card-content style="padding:14px;text-align:center">
-              <ion-icon style="font-size: 32px;color: #85bb65;" name="cash-outline" slot="start"></ion-icon><br>
-              <ion-label style="font-size: 14px;">
-                Subscriptions
-              </ion-label>
-            </ion-card-content>
-          </ion-card>
-        </ion-col> -->
-        <ion-col size="6">
-          <ion-card (click)="redirectFromSideMenu('feedbacks')" style="margin: 6px;">
-            <ion-card-content style="padding:14px;text-align:center">
-              <ion-icon style="font-size: 32px;color: maroon" name="reader-outline" slot="start"></ion-icon><br>
-              <ion-label style="font-size: 14px;">
-                Feedback
-              </ion-label>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
+
         <ion-col size="6">
           <ion-card (click)="redirectFromSideMenu('notifications')" style="margin: 6px;">
             <ion-card-content style="padding:14px;text-align:center">
@@ -55,6 +36,63 @@
             </ion-card-content>
           </ion-card>
         </ion-col>
+
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('history')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: steelblue;" name="hourglass-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                History
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('settings')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;" name="cog-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Settings
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('feedbacks')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: maroon" name="reader-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Feedback
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="6">
+          <ion-card (click)="redirectFromSideMenu('faqtnc')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: olive;" name="flag-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                FAQs
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        
+        <ion-col size="6" *ngIf="loggedInUser?.data[0].user_type==3">
+          <ion-card (click)="redirectFromSideMenu('subscriptions')" style="margin: 6px;">
+            <ion-card-content style="padding:14px;text-align:center">
+              <ion-icon style="font-size: 32px;color: #85bb65;" name="cash-outline" slot="start"></ion-icon><br>
+              <ion-label style="font-size: 14px;">
+                Subscriptions
+              </ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        
+        
         <ion-col size="6">
           <ion-card (click)="redirectFromSideMenu('contact-us')" style="margin: 6px;">
             <ion-card-content style="padding:14px;text-align:center">
@@ -66,36 +104,6 @@
           </ion-card>
         </ion-col>
         <!-- <ion-col size="3"></ion-col> -->
-        <ion-col size="6">
-          <ion-card (click)="redirectFromSideMenu('settings')" style="margin: 6px;">
-            <ion-card-content style="padding:14px;text-align:center">
-              <ion-icon style="font-size: 32px;" name="cog-outline" slot="start"></ion-icon><br>
-              <ion-label style="font-size: 14px;">
-                Settings
-              </ion-label>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-        <ion-col size="6">
-          <ion-card (click)="redirectFromSideMenu('faqtnc')" style="margin: 6px;">
-            <ion-card-content style="padding:14px;text-align:center">
-              <ion-icon style="font-size: 32px;color: olive;" name="flag-outline" slot="start"></ion-icon><br>
-              <ion-label style="font-size: 14px;">
-                FAQs
-              </ion-label>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-        <ion-col size="6">
-          <ion-card (click)="redirectFromSideMenu('history')" style="margin: 6px;">
-            <ion-card-content style="padding:14px;text-align:center">
-              <ion-icon style="font-size: 32px;color: steelblue;" name="hourglass-outline" slot="start"></ion-icon><br>
-              <ion-label style="font-size: 14px;">
-                History
-              </ion-label>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
       
         <ion-col size="6" *ngIf="loggedInUser?.data[0].user_type==3"> 
           <ion-card (click)="redirectFromSideMenu('add-member')" style="margin: 6px;">

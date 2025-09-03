@@ -1,4 +1,4 @@
-export const SERVER_URL = "http://techwise-apps.com/connectplus/";
+export const SERVER_URL = "http://techwise-apps.com/sangath/";
 
 export const UPLOAD_URL = SERVER_URL + "user-media/v1/upload-user-media";
 export const APP_VERSION = "1.0.2";

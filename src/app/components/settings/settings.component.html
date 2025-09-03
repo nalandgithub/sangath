@@ -7,13 +7,6 @@
     </ion-item>
   </ion-list>
 
-  <ion-list class="ionlist" *ngIf="loggedInUser?.data[0].user_type==3">
-    <ion-item>
-      <ion-label>Pop Up Image</ion-label>
-      <ion-toggle checked="{{isCheck1}}" (ionChange)="onChange1($event)"></ion-toggle>
-    </ion-item>
-  </ion-list>
-
   <ion-list class="ionlist">
     <ion-item>
       <p><a (click)="presentAlertPrompt()">Deactivate Account</a></p>
