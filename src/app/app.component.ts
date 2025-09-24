@@ -211,10 +211,10 @@ export class AppComponent implements OnInit {
     });
 
     // Always listen for FCM token refresh → this is critical on iOS
-    FCM.addListener('tokenRefresh', (event) => {
-      console.log('FCM Token refreshed:', event.token);
-      localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, event.token);
-    });
+//   FCM.onTokenRefresh((token) => {
+//   console.log('FCM Token refreshed:', token);
+//   localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token);
+// });
     PushNotifications.addListener("registrationError", (error: any) => {
       try {
         console.log("Registration error:", error);
