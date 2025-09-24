@@ -1,16 +1,42 @@
 import UIKit
 import Capacitor
 import Firebase
+import UserNotifications
+import FirebaseMessaging
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
 
-    var window: UIWindow?
+     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-           FirebaseApp.configure()
+        // Configure Firebase
+        FirebaseApp.configure()
+
+        // Set notification center delegate for foreground notifications
+        UNUserNotificationCenter.current().delegate = self
+
+        // Register with APNs so PushNotifications.register() can succeed
+        application.registerForRemoteNotifications()
+
+        // Set Firebase Messaging delegate to observe FCM token changes
+        Messaging.messaging().delegate = self
+
         return true
+    }
+
+    // Forward APNs token to Firebase Messaging
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+
+    // Optional: observe FCM token refreshes for debugging
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let token = fcmToken {
+            print("[FCM] didReceiveRegistrationToken: \(token)")
+        } else {
+            print("[FCM] didReceiveRegistrationToken: nil")
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -46,25 +72,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Feel free to add additional processing here, but if you want the App API to support
         // tracking app url opens, make sure to keep this call
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
-    }
-
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-  NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
-}
-
-func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-  NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
-}
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-
-        let statusBarRect = UIApplication.shared.statusBarFrame
-        guard let touchPoint = event?.allTouches?.first?.location(in: self.window) else { return }
-
-        if statusBarRect.contains(touchPoint) {
-            NotificationCenter.default.post(name: .capacitorStatusBarTapped, object: nil)
-        }
     }
 
 }

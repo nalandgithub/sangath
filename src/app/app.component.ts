@@ -1,3 +1,5 @@
+
+
 import { Component, OnInit } from "@angular/core";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
@@ -50,27 +52,41 @@ export class AppComponent implements OnInit {
     private cmnservice: CmnServiceService,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
-    if (Capacitor.isPluginAvailable("StatusBar")) {
-      StatusBar.setStyle({ style: Style.Default });
-      StatusBar.setBackgroundColor({ color: "#961175" });
+    try {
+      console.log("App initializing...");
+
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setStyle({ style: Style.Default });
+        StatusBar.setBackgroundColor({ color: "#961175" });
+      }
+
+      await this.splashscreenSetting();
+
+      this.currentPlatform = Capacitor.getPlatform();
+      console.log("Platform detected:", this.currentPlatform);
+      console.log("Plugin availability:", {
+        PushNotifications: Capacitor.isPluginAvailable("PushNotifications"),
+        FCM: Capacitor.isPluginAvailable("FCM"),
+        Keyboard: Capacitor.isPluginAvailable("Keyboard"),
+      });
+
+      if (localStorage.getItem(LOGIN_DETAILS_KEY)) {
+        this.getPopupImage();
+      }
+
+      await this.setupFirebase();
+
+      this.loggedInUser = JSON.parse(localStorage.getItem("login-details"));
+      this.getAppInfoForVersion();
+      this.manageKeyboardEvents();
+
+      console.log("App initialization completed successfully");
+    } catch (error) {
+      console.log("App initialization error:", error);
     }
-
-    await this.splashscreenSetting();
-
-    this.currentPlatform = Capacitor.getPlatform();
-
-    if (localStorage.getItem(LOGIN_DETAILS_KEY)) {
-      this.getPopupImage();
-    }
-
-    await this.setupFirebase();
-
-    this.loggedInUser = JSON.parse(localStorage.getItem("login-details"));
-    this.getAppInfoForVersion();
-    this.manageKeyboardEvents();
   }
 
   /** Toast banner while app is foregrounded (no extra plugin) */
@@ -128,61 +144,101 @@ export class AppComponent implements OnInit {
   }
 
   async setupFirebase() {
-    // Create Android notification channel once (required for Android 8+)
-    if (this.currentPlatform === "android") {
-      try {
-        await PushNotifications.createChannel({
-          id: "high",
-          name: "General Notifications",
-          description: "General notifications",
-          importance: 5, // heads-up
-          visibility: 1,
-          vibration: true,
-        });
-      } catch {}
-    }
-
-    // Request permission and register ONCE for both platforms
-    const perm = await PushNotifications.requestPermissions();
-    if (perm.receive === "granted") {
-      await PushNotifications.register();
-
-      // iOS: get the FCM token (APNs token alone isn't enough for FCM)
-      if (this.currentPlatform === "ios") {
+    try {
+      if (!Capacitor.isPluginAvailable("PushNotifications")) {
+        console.log("PushNotifications plugin not available; skipping push setup.");
+        return;
+      }
+      // Create Android notification channel once (required for Android 8+)
+      if (this.currentPlatform === "android") {
         try {
-          const r = await FCM.getToken();
-          if (r?.token) {
-            console.log("FCM Token (iOS):", r.token);
-            localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, r.token);
-          }
+          await PushNotifications.createChannel({
+            id: "high",
+            name: "General Notifications",
+            description: "General notifications",
+            importance: 5, // heads-up
+            visibility: 1,
+            vibration: true,
+          });
         } catch (err) {
-          console.log("FCM getToken error", err);
+          console.log("Channel creation error:", err);
         }
       }
-    } else {
-      // Permission not granted
-      return;
+
+      // Request permission and register ONCE for both platforms
+      const perm = await PushNotifications.requestPermissions();
+      if (perm.receive === "granted") {
+        await PushNotifications.register();
+
+        // For iOS, wait for APNS token registration before getting FCM token
+        if (this.currentPlatform === "ios") {
+          // Don't try to get FCM token immediately - wait for registration event
+          console.log("iOS: Waiting for APNS token registration before FCM token");
+        }
+      } else {
+        // Permission not granted
+        console.log("Push notification permission not granted");
+        return;
+      }
+    } catch (error) {
+      console.log("Firebase setup error:", error);
     }
 
     // Device/APNs/FCM token
-    PushNotifications.addListener("registration", (token: Token) => {
-      console.log("Push token:", token.value);
-      // Use Android registration token unless you override with FCM token later
-      if (this.currentPlatform === "android") {
-        localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
+  PushNotifications.addListener("registration", async (token: Token) => {
+      try {
+        console.log("Push token:", token.value);
+
+        if (this.currentPlatform === "android") {
+          // Use Android registration token
+          localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
+        } else if (this.currentPlatform === "ios") {
+          // For iOS, first store APNS token, then get FCM token
+          localStorage.setItem("apns_token", token.value);
+
+          // Wait a bit for APNS token to be processed, then get FCM token
+          setTimeout(async () => {
+            try {
+              if (!Capacitor.isPluginAvailable("FCM")) {
+                console.log("FCM plugin not available; skipping FCM token fetch.");
+                return;
+              }
+              const fcmResult = await FCM.getToken();
+              if (fcmResult?.token) {
+                console.log("FCM Token (iOS):", fcmResult.token);
+                localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmResult.token);
+              } else {
+                console.log("FCM getToken returned no token.");
+              }
+            } catch (fcmError) {
+              console.log("FCM getToken error after APNS registration:", fcmError);
+            }
+          }, 2000); // Wait 2 seconds for APNS token to be processed
+        }
+      } catch (error) {
+        console.log("Registration listener error:", error);
       }
-    });
+    });  
 
     PushNotifications.addListener("registrationError", (error: any) => {
-      alert("Error on registration: " + JSON.stringify(error));
+      try {
+        console.log("Registration error:", error);
+        // Don't show alert, just log the error
+      } catch (err) {
+        console.log("Registration error handler error:", err);
+      }
     });
 
     // Foreground messages → show toast so user sees something
     PushNotifications.addListener(
       "pushNotificationReceived",
       (notification: PushNotificationSchema) => {
-        console.log("Push received (fg): " + JSON.stringify(notification));
-        this.showForegroundToast(notification);
+        try {
+          console.log("Push received (fg): " + JSON.stringify(notification));
+          this.showForegroundToast(notification);
+        } catch (error) {
+          console.log("Push received listener error:", error);
+        }
       }
     );
 
@@ -190,38 +246,52 @@ export class AppComponent implements OnInit {
     PushNotifications.addListener(
       "pushNotificationActionPerformed",
       (ev: ActionPerformed) => {
-        console.log("pushNotificationActionPerformed:", ev);
-        // Safely pull action regardless of structure
-        const data: any =
-          (ev?.notification as any)?.data ||
-          (ev as any)?.data ||
-          {};
-        const action = data["action"] || "";
-        this.routeFromAction(action);
+        try {
+          console.log("pushNotificationActionPerformed:", ev);
+          // Safely pull action regardless of structure
+          const data: any =
+            (ev?.notification as any)?.data ||
+            (ev as any)?.data ||
+            {};
+          const action = data["action"] || "";
+          this.routeFromAction(action);
+        } catch (error) {
+          console.log("Push action performed listener error:", error);
+        }
       }
     );
   }
 
   getAppInfoForVersion() {
-    App.getInfo().then((info) => {
-      if (info && info.version) {
-        this.appVersionNum = info.version;
-      }
-    });
+    try {
+      App.getInfo().then((info) => {
+        if (info && info.version) {
+          this.appVersionNum = info.version;
+        }
+      }).catch((error) => {
+        console.log("App.getInfo error:", error);
+      });
+    } catch (error) {
+      console.log("App.getInfo catch error:", error);
+    }
   }
 
   // Show the splash for five seconds and then automatically hide it:
   async splashscreenSetting() {
-    await SplashScreen.show({
-      showDuration: 5000,
-      autoHide: true,
-    });
+    try {
+      await SplashScreen.show({
+        showDuration: 5000,
+        autoHide: true,
+      });
+    } catch (error) {
+      console.log("Splash screen error:", error);
+    }
   }
   logout() {
-     localStorage.clear(); // clears all keys
-     localStorage.removeItem("login-token");
+    localStorage.clear(); // clears all keys
+    localStorage.removeItem("login-token");
     this.navCtrl.navigateRoot("/login");
-    
+
   }
   redirectFromSideMenu(moduleName: any) {
     this.menuCtrl.toggle();
@@ -240,8 +310,8 @@ export class AppComponent implements OnInit {
             platform == "android"
               ? resp.android_version
               : platform == "ios"
-              ? resp.ios_version
-              : "";
+                ? resp.ios_version
+                : "";
           if (this.latestVersion != this.appVersionNum) {
             this.showUpdateAlert();
           }
@@ -258,7 +328,7 @@ export class AppComponent implements OnInit {
         {
           text: "Cancel",
           role: "cancel",
-          handler: () => {},
+          handler: () => { },
         },
         {
           text: "Update",
@@ -310,7 +380,7 @@ export class AppComponent implements OnInit {
           text: "Cancel",
           role: "cancel",
           cssClass: "secondary",
-          handler: () => {},
+          handler: () => { },
         },
       ],
     });
@@ -341,16 +411,44 @@ export class AppComponent implements OnInit {
   }
 
   manageKeyboardEvents() {
-    Keyboard.addListener("keyboardWillShow", (info) => {
-      this.cmnservice.callAnotherComponentMehthod(KEYBOARD_IS_OPEN_INOVKE_KEY);
-    });
+    try {
+      if (!Capacitor.isPluginAvailable("Keyboard")) {
+        console.log("Keyboard plugin not available; skipping keyboard listeners.");
+        return;
+      }
+      Keyboard.addListener("keyboardWillShow", (info) => {
+        try {
+          this.cmnservice.callAnotherComponentMehthod(KEYBOARD_IS_OPEN_INOVKE_KEY);
+        } catch (error) {
+          console.log("Keyboard will show error:", error);
+        }
+      });
 
-    Keyboard.addListener("keyboardDidShow", (info) => {});
+      Keyboard.addListener("keyboardDidShow", (info) => {
+        try {
+          // Keyboard did show - no action needed
+        } catch (error) {
+          console.log("Keyboard did show error:", error);
+        }
+      });
 
-    Keyboard.addListener("keyboardWillHide", () => {
-      this.cmnservice.callAnotherComponentMehthod(KEYBOARD_IS_CLOSE_INOVKE_KEY);
-    });
+      Keyboard.addListener("keyboardWillHide", () => {
+        try {
+          this.cmnservice.callAnotherComponentMehthod(KEYBOARD_IS_CLOSE_INOVKE_KEY);
+        } catch (error) {
+          console.log("Keyboard will hide error:", error);
+        }
+      });
 
-    Keyboard.addListener("keyboardDidHide", () => {});
+      Keyboard.addListener("keyboardDidHide", () => {
+        try {
+          // Keyboard did hide - no action needed
+        } catch (error) {
+          console.log("Keyboard did hide error:", error);
+        }
+      });
+    } catch (error) {
+      console.log("Keyboard events setup error:", error);
+    }
   }
 }

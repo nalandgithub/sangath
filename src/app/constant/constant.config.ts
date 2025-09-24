@@ -1,9 +1,10 @@
-export const SERVER_URL = "http://techwise-apps.com/sangath/";
+export const SERVER_URL = "https://techwise-apps.com/sangath/";
 
 export const UPLOAD_URL = SERVER_URL + "user-media/v1/upload-user-media";
 export const APP_VERSION = "1.0.2";
 
-export const ALLOWED_FILE_SIZE = 10000000;
+export const ALLOWED_FILE_SIZE =
+ 10000000;
 export const NO_MESSAGES_FETCHED_AT_A_TIME = 15;
 
 export const POST_TYPE_TRAVELLER = 0;
