@@ -185,41 +185,36 @@ export class AppComponent implements OnInit {
     }
 
     // Device/APNs/FCM token
-  PushNotifications.addListener("registration", async (token: Token) => {
-      try {
-        console.log("Push token:", token.value);
+    PushNotifications.addListener('registration', async (token: any) => {
+      console.log('APNS Token (iOS) or FCM (Android):', token.value);
 
-        if (this.currentPlatform === "android") {
-          // Use Android registration token
-          localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
-        } else if (this.currentPlatform === "ios") {
-          // For iOS, first store APNS token, then get FCM token
-          localStorage.setItem("apns_token", token.value);
+      if (this.currentPlatform === 'android') {
+        // Android → token is already the FCM token
+        localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
+      } else if (this.currentPlatform === 'ios') {
+        // Store APNS token separately if you want
+        localStorage.setItem('apns_token', token.value);
 
-          // Wait a bit for APNS token to be processed, then get FCM token
-          setTimeout(async () => {
-            try {
-              if (!Capacitor.isPluginAvailable("FCM")) {
-                console.log("FCM plugin not available; skipping FCM token fetch.");
-                return;
-              }
-              const fcmResult = await FCM.getToken();
-              if (fcmResult?.token) {
-                console.log("FCM Token (iOS):", fcmResult.token);
-                localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmResult.token);
-              } else {
-                console.log("FCM getToken returned no token.");
-              }
-            } catch (fcmError) {
-              console.log("FCM getToken error after APNS registration:", fcmError);
-            }
-          }, 2000); // Wait 2 seconds for APNS token to be processed
+        // Request FCM token (sometimes immediately available, sometimes not yet)
+        try {
+          const fcmResult = await FCM.getToken();
+          if (fcmResult?.token) {
+            console.log('FCM Token (iOS):', fcmResult.token);
+            localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmResult.token);
+          } else {
+            console.log('FCM.getToken() returned no token yet, waiting for refresh…');
+          }
+        } catch (err) {
+          console.error('Error getting FCM token on iOS:', err);
         }
-      } catch (error) {
-        console.log("Registration listener error:", error);
       }
-    });  
+    });
 
+    // Always listen for FCM token refresh → this is critical on iOS
+    FCM.addListener('tokenRefresh', (event) => {
+      console.log('FCM Token refreshed:', event.token);
+      localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, event.token);
+    });
     PushNotifications.addListener("registrationError", (error: any) => {
       try {
         console.log("Registration error:", error);
