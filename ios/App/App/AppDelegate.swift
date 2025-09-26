@@ -30,10 +30,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Messaging.messaging().apnsToken = deviceToken
     }
 
-    // Optional: observe FCM token refreshes for debugging
+    // Required: FCM token handling - forward to the bridge
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         if let token = fcmToken {
             print("[FCM] didReceiveRegistrationToken: \(token)")
+            // Trigger FCM.onTokenRefresh if token is ready
+            // This will be picked up by the TypeScript FCM.onTokenRefresh listener
         } else {
             print("[FCM] didReceiveRegistrationToken: nil")
         }

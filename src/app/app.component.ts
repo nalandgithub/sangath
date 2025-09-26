@@ -192,29 +192,26 @@ export class AppComponent implements OnInit {
         // Android → token is already the FCM token
         localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
       } else if (this.currentPlatform === 'ios') {
-        // Store APNS token separately if you want
+        // Store APNS token separately
         localStorage.setItem('apns_token', token.value);
 
-        // Request FCM token (sometimes immediately available, sometimes not yet)
-        try {
-          const fcmResult = await FCM.getToken();
-          if (fcmResult?.token) {
-            console.log('FCM Token (iOS):', fcmResult.token);
-            localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmResult.token);
-          } else {
-            console.log('FCM.getToken() returned no token yet, waiting for refresh…');
-          }
-        } catch (err) {
-          console.error('Error getting FCM token on iOS:', err);
-        }
+        // Add delay to ensure APNs token is processed by Firebase
+        setTimeout(async () => {
+          await this.getFCMTokenWithRetry();
+        }, 1000);
       }
     });
 
     // Always listen for FCM token refresh → this is critical on iOS
-//   FCM.onTokenRefresh((token) => {
-//   console.log('FCM Token refreshed:', token);
-//   localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token);
-// });
+    if (this.currentPlatform === 'ios' && Capacitor.isPluginAvailable("FCM")) {
+      try {
+        // FCM token refresh comes via PushNotification registration listener
+        // Additionally, we set up a periodic check for FCM token updates
+        this.setupFCMTokenRefreshCheck();
+      } catch (error) {
+        console.error('Error setting up FCM token refresh listener:', error);
+      }
+    }
     PushNotifications.addListener("registrationError", (error: any) => {
       try {
         console.log("Registration error:", error);
@@ -445,5 +442,82 @@ export class AppComponent implements OnInit {
     } catch (error) {
       console.log("Keyboard events setup error:", error);
     }
+  }
+
+  // Helper method to get FCM token with retry mechanism
+  private async getFCMTokenWithRetry(maxRetries: number = 3): Promise<void> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        if (!Capacitor.isPluginAvailable("FCM")) {
+          console.log("FCM plugin not available; skipping FCM token fetch.");
+          return;
+        }
+
+        const fcmResult = await FCM.getToken();
+        if (fcmResult?.token && fcmResult.token.trim() !== '') {
+          console.log(`FCM Token (iOS) - Attempt ${attempt}:`, fcmResult.token);
+          localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmResult.token);
+          // Send token to server
+          this.sendTokenToServer(fcmResult.token);
+          break;
+        } else {
+          console.log(`FCM.getToken() returned no token on attempt ${attempt}`);
+        }
+      } catch (err) {
+        console.error(`Error getting FCM token on attempt ${attempt}:`, err);
+      }
+
+      // If not last attempt, wait before retry
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Progressive delay
+      }
+    }
+  }
+
+  // Helper method to send FCM token to server
+  private sendTokenToServer(token: string): void {
+    if (!token || token.trim() === '') {
+      console.log('Token is empty, not sending to server');
+      return;
+    }
+
+    try {
+      this.cmnservice.sendTokenToapi(token);
+    } catch (error) {
+      console.error('Error sending token to server:', error);
+    }
+  }
+
+  // Setup periodic FCM token refresh check for iOS
+  private setupFCMTokenRefreshCheck(): void {
+    // Check for FCM token updates every 5 seconds for the first 30 seconds after app start
+    let checkCount = 0;
+    const maxChecks = 6; // 6 checks at 5 second intervals = 30 seconds
+
+    const checkInterval = setInterval(async () => {
+      checkCount++;
+
+      if (checkCount >= maxChecks) {
+        clearInterval(checkInterval);
+        return;
+      }
+
+      try {
+        if (Capacitor.isPluginAvailable("FCM")) {
+          const fcmResult = await FCM.getToken();
+          if (fcmResult?.token && fcmResult.token.trim() !== '') {
+            const storedToken = localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY);
+            // Only update if token has changed
+            if (storedToken !== fcmResult.token) {
+              console.log('FCM Token updated:', fcmResult.token);
+              localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmResult.token);
+              this.sendTokenToServer(fcmResult.token);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking FCM token:', error);
+      }
+    }, 5000); // Check every 5 seconds
   }
 }
