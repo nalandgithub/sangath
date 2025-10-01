@@ -13,8 +13,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Configure Firebase
         FirebaseApp.configure()
 
-        // Set notification center delegate for foreground notifications
-        UNUserNotificationCenter.current().delegate = self
+    // Set notification center delegate for foreground notifications  
+    UNUserNotificationCenter.current().delegate = self
+    
+    // Request notification permissions explicitly for better APNS handling
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
+        print("[APNS] Permission granted: \(granted)")
+        if let error = error {
+            print("[APNS] Permission error: \(error.localizedDescription)")
+        }
+    }
 
         // Register with APNs so PushNotifications.register() can succeed
         application.registerForRemoteNotifications()
@@ -27,7 +35,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // Forward APNs token to Firebase Messaging
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("[APNS] Device token received, setting APNS token for Firebase...")
         Messaging.messaging().apnsToken = deviceToken
+        print("[APNS] APNS token sent to Firebase Messaging")
+    }
+    
+    // Handle APNS registration failures
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("[APNS] Failed to register for remote notifications: \(error.localizedDescription)")
     }
 
     // Required: FCM token handling - forward to the bridge
@@ -39,6 +54,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             print("[FCM] didReceiveRegistrationToken: nil")
         }
+    }
+    
+    // MARK: - UNUserNotificationCenterDelegate methods for foreground notifications
+    
+    // This method is called when a notification arrives while the app is in the foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter, 
+                                willPresent notification: UNNotification, 
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let userInfo = notification.request.content.userInfo
+        print("[Notification] Received in foreground:", userInfo)
+        
+        // Show the notification even when app is in foreground
+        // This allows the iOS native notification to appear
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .sound, .badge])
+        } else {
+            completionHandler([.alert, .sound, .badge])
+        }
+    }
+    
+    // This method is called when the user taps on a notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter, 
+                                didReceive response: UNNotificationResponse, 
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        print("[Notification] User tapped notification:", userInfo)
+        
+        // Forward to Capacitor's notification handling
+        // The notification tap will be handled by the pushNotificationActionPerformed listener
+        completionHandler()
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

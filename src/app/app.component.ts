@@ -191,14 +191,19 @@ export class AppComponent implements OnInit {
       if (this.currentPlatform === 'android') {
         // Android → token is already the FCM token
         localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
+        this.sendTokenToServer(token.value);
       } else if (this.currentPlatform === 'ios') {
         // Store APNS token separately
         localStorage.setItem('apns_token', token.value);
 
-        // Add delay to ensure APNs token is processed by Firebase
+        // Wait for APNs to be processed by Firebase - real devices need longer delay
+        // Simulators don't have real APNS tokens, so device detection helps timing
+        const delay = 3000; // Increased delay for real devices
+
+        console.log(`iOS: Waiting ${delay}ms for APNs token to be processed by Firebase...`);
         setTimeout(async () => {
           await this.getFCMTokenWithRetry();
-        }, 1000);
+        }, delay);
       }
     });
 
@@ -445,7 +450,7 @@ export class AppComponent implements OnInit {
   }
 
   // Helper method to get FCM token with retry mechanism
-  private async getFCMTokenWithRetry(maxRetries: number = 3): Promise<void> {
+  private async getFCMTokenWithRetry(maxRetries: number = 5): Promise<void> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         if (!Capacitor.isPluginAvailable("FCM")) {
@@ -459,17 +464,29 @@ export class AppComponent implements OnInit {
           localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmResult.token);
           // Send token to server
           this.sendTokenToServer(fcmResult.token);
-          break;
+          return;
         } else {
           console.log(`FCM.getToken() returned no token on attempt ${attempt}`);
         }
       } catch (err) {
+        const errorMessage = JSON.stringify(err);
         console.error(`Error getting FCM token on attempt ${attempt}:`, err);
+
+        // Check for specific "No APNS token specified" error - wait longer
+        if (errorMessage.includes("No APNS token specified") ||
+          errorMessage.includes("No APNS Token specified") ||
+          errorMessage.includes("APNS Token specified")) {
+          console.log("APNS token not ready yet, waiting longer before retry...");
+          if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, 5000 + (attempt * 2000)));
+          }
+        }
       }
 
-      // If not last attempt, wait before retry
+      // Wait before retry
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Progressive delay
+        const waitTime = attempt < 3 ? 2000 * attempt : 5000;
+        await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
   }
