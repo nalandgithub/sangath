@@ -90,14 +90,7 @@ export class CmnServiceService {
       fcmToken: token,
     };
 
-    this.http.put(SERVER_URL + 'profiles/v1/token', data).subscribe(
-      (res: any) => {
-        //console.log('Push token api Res : -', res);
-      },
-      (err) => {
-        //console.log('push token error :-', err);
-      }
-    );
+   
   }
 
   getDeviceUniqueToken() {

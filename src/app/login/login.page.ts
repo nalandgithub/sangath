@@ -12,6 +12,7 @@ import {
 } from "../constant/constant.config";
 import { CmnServiceService } from "../Service/cmn-service.service";
 import { ServicesWrapperService } from "../Service/services-wrapper.service";
+import { Capacitor } from "@capacitor/core";
 
 // import { AuthService } from '../shared-components/auth-service/auth.service.ts';
 import { LoginService } from "./service/login.service";
@@ -220,14 +221,36 @@ export class LoginPage implements OnInit {
       }
   }
 
-  login() {
+  async login() {
     this.showLoginLoader = true;
     if (this.otp?.length > 5) {
+      // Ensure fingerprint (FCM token) exists; fetch if missing
+      let fingerprint = localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY);
+      if (!fingerprint || fingerprint === 'null' || fingerprint.trim() === '') {
+        try {
+          if (Capacitor.isPluginAvailable('FCM')) {
+            const result: any = await FCM.getToken();
+            if (result?.token && result.token.trim() !== '') {
+              fingerprint = result.token;
+              localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fingerprint);
+              console.log('[Login] Retrieved fresh FCM token for fingerprint');
+            } else {
+              console.log('[Login] FCM.getToken returned empty token');
+            }
+          } else {
+            console.log('[Login] FCM plugin not available while logging in');
+          }
+        } catch (e) {
+          console.log('[Login] Error fetching FCM token before login:', e);
+        }
+      }
+
       let checkOtpObj = {
         phone: this.mobile_number,
         otp: this.otp,
-        fingerprint: localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY),
+        fingerprint: fingerprint || null,
       };
+      console.log('[Login] Sending login request with fingerprint:', checkOtpObj.fingerprint);
       this.serviceWrapper
         .postApi(API_ENDPOINT_CHECK_OTP, checkOtpObj)
         .subscribe(
