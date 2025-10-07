@@ -15,6 +15,8 @@ import { ServicesWrapperService } from "../Service/services-wrapper.service";
 
 // import { AuthService } from '../shared-components/auth-service/auth.service.ts';
 import { LoginService } from "./service/login.service";
+import { fingerprint } from "@angular/compiler/src/i18n/digest";
+import { FCM } from "@capacitor-community/fcm";
 
 @Component({
   selector: "app-login",
@@ -93,8 +95,21 @@ export class LoginPage implements OnInit {
   }
 
   async send_otp() {
+    let fcmToken;
+    if(localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY)==null || localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY)=="undefined"  )
+    {
+      const fcmResult = await FCM.getToken();
+      fcmToken = fcmResult.token;
+      localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, fcmToken);
+    }
+    else
+    {
+      fcmToken=localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY);
+    }
+
     const body = {
       phone: this.mobile_number,
+      fingerprint: localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY),
     };
 
     this.showStartLoader = true;
