@@ -110,7 +110,7 @@ export class LoginPage implements OnInit {
 
     const body = {
       phone: this.mobile_number,
-      fingerprint: localStorage.getItem(FIREBASE_DEVICE_TOKEN_KEY),
+      fingerprint: fcmToken,
     };
 
     this.showStartLoader = true;
@@ -137,25 +137,7 @@ export class LoginPage implements OnInit {
         //console.log('err => ', err);
       }
     );
-    // this.httpClient
-    //   .post<any>(SERVER_URL + 'Api/userlogin', body, config)
-    //   .subscribe(
-    //     (result) => {
-    //       this.showStartLoader = false;
-    //       this.otp_screen = true;
-    //       console.log(result);
-    //       this.startTimer();
-    //       this.otpData = result;
-    //     },
-    //     (err) => {
-    //       this.showStartLoader = false;
-    //       this.cmnService.showError(
-    //         'You cannot login. Please contact administrator.'
-    //       );
-
-    //       console.log('err => ', err);
-    //     }
-    //   );
+   
   }
 
   async onResendOtpClick() {

@@ -142,6 +142,7 @@ export class AppComponent implements OnInit {
         break;
     }
   }
+private pushListenersBound = false;
 
   async setupFirebase() {
     try {
@@ -169,14 +170,11 @@ export class AppComponent implements OnInit {
       const perm = await PushNotifications.requestPermissions();
       if (perm.receive === "granted") {
         await PushNotifications.register();
-
-        // For iOS, wait for APNS token registration before getting FCM token
         if (this.currentPlatform === "ios") {
-          // Don't try to get FCM token immediately - wait for registration event
           console.log("iOS: Waiting for APNS token registration before FCM token");
         }
       } else {
-        // Permission not granted
+      
         console.log("Push notification permission not granted");
         return;
       }
@@ -194,10 +192,13 @@ export class AppComponent implements OnInit {
         this.sendTokenToServer(token.value);
       } else if (this.currentPlatform === 'ios') {
         // Store APNS token separately
-        localStorage.setItem('apns_token', token.value);
+        // localStorage.setItem(FIREBASE_DEVICE_TOKEN_KEY, token.value);
+          localStorage.setItem('APNS_TOKEN_KEY', token.value);
 
-        // Wait for APNs to be processed by Firebase - real devices need longer delay
-        // Simulators don't have real APNS tokens, so device detection helps timing
+        setTimeout(async () => {
+    await this.getFCMTokenWithRetry();
+  }, 3000);
+
         const delay = 3000; // Increased delay for real devices
 
         console.log(`iOS: Waiting ${delay}ms for APNs token to be processed by Firebase...`);
@@ -207,11 +208,8 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // Always listen for FCM token refresh → this is critical on iOS
     if (this.currentPlatform === 'ios' && Capacitor.isPluginAvailable("FCM")) {
       try {
-        // FCM token refresh comes via PushNotification registration listener
-        // Additionally, we set up a periodic check for FCM token updates
         this.setupFCMTokenRefreshCheck();
       } catch (error) {
         console.error('Error setting up FCM token refresh listener:', error);

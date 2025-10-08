@@ -4,7 +4,7 @@ import { API_ENDPOINT_DISLIKE, API_ENDPOINT_SHOWINTEREST } from 'src/app/constan
 import { PostDetailsPage } from 'src/app/post-details/post-details.page';
 import { CmnServiceService } from 'src/app/Service/cmn-service.service';
 import { ServicesWrapperService } from 'src/app/Service/services-wrapper.service';
-// import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
+//  import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { MoreMenuPopoverComponent } from '../more-menu-popover/more-menu-popover.component';
 
 @Component({
@@ -20,7 +20,7 @@ export class PostCardComponent implements OnInit {
     private cmnService: CmnServiceService,
     private serviceWrapper: ServicesWrapperService,
     private cmn: CmnServiceService,
-    // private callNumber: CallNumber
+    //  private callNumber: CallNumber
   ) { }
 
   ngOnInit() {
@@ -80,15 +80,15 @@ export class PostCardComponent implements OnInit {
     })
   }
 
-  callPerson(number) {
-    // this.callNumber.callNumber(number, false)
-    //   .then(res => 
-    //     console.log('Launched dialer!'
-    //   , res))
-    //   .catch(err => 
-    //     console.log('Error launching dialer'
-    //     , err));
-  }
+  // callPerson(number) {
+  //   this.callNumber.callNumber(number, false)
+  //     .then(res => 
+  //       console.log('Launched dialer!'
+  //     , res))
+  //     .catch(err => 
+  //       console.log('Error launching dialer'
+  //       , err));
+  // }
 
   formatDate(dateObj: any) {
     return dateObj.replace(/-/g, "/");

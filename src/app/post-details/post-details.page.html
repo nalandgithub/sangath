@@ -26,9 +26,18 @@
           <ion-col size="1"></ion-col>
           <ion-col size="7" style="font-size: 18px;">
             <ion-icon name="person-circle-outline" style="font-size: 14px;"></ion-icon>&nbsp;{{people.user_name}}</ion-col>
-          <ion-col size="1" (click)="callPerson(people.mobile_no)">
+          <!-- <ion-col size="1" (click)="callPerson(people.mobile_no)">
             <ion-icon name="call" style="color: #961175; font-size: 24px;"></ion-icon>
+          </ion-col> -->
+          <ion-col size="1">
+            <a [href]="'tel:' + people.mobile_no">
+              <ion-icon
+                name="call"
+                style="color: #961175; font-size: 24px;">
+              </ion-icon>
+            </a>
           </ion-col>
+
           <ion-col size="1"></ion-col>
           <ion-col size="1">
             <a href="https://wa.me/+91{{people.mobile_no}}" style="color:green;text-decoration: none" >

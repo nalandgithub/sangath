@@ -61,11 +61,13 @@
     </ion-label>
     <ion-row *ngIf="module != 'my-post' && module != 'history'"
       style="padding-top: 10px;padding-bottom: 3px;font-size: 13px;">
-      <ion-col size="2" (click)="callPerson(detail.mobile_no)">
-        <ion-text color="primary">
-          <ion-icon name="call" style="font-size: 20px;"></ion-icon>
-        </ion-text>
-      </ion-col>
+     <ion-col size="2">
+  <a [href]="'tel:' + detail.mobile_no">
+    <ion-text color="primary">
+      <ion-icon name="call" style="font-size: 20px;"></ion-icon>
+    </ion-text>
+  </a>
+</ion-col>
       <ion-col size="2">
         <ion-text color="primary">
           <a href="https://wa.me/+91{{detail.mobile_no}}" style="color:green;text-decoration:none">
