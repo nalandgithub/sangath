@@ -54,6 +54,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             print("[FCM] didReceiveRegistrationToken: nil")
         }
+        
+        NotificationCenter.default.post(
+            name: .capacitorDidRegisterForRemoteNotifications,
+            object: fcmToken
+        )
     }
     
     // MARK: - UNUserNotificationCenterDelegate methods for foreground notifications
